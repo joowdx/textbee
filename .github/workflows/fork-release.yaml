@@ -1,0 +1,255 @@
+# Builds this fork's release from an upstream textbee release: the API and
+# web images (amd64, to ghcr.io/<owner>/<repo>/{api,web}) and the prod APK,
+# then publishes a GitHub release tagged <upstream tag>-fork.<n>.
+#
+# It checks upstream once a day and builds only when a release is new, so a
+# quiet day costs one short job. Upstream's code is checked out as-is; the
+# only changes are made at build time:
+#   - web/.env carries the NEXT_PUBLIC_* values Next.js inlines into the bundle;
+#   - the APK's prod API_BASE_URL points at this fork's API;
+#   - the APK has this fork's package name, Firebase project and signing key.
+#
+# Repository variables:
+#   API_BASE_URL                    e.g. https://sms.example.com/api/v1
+#   ANDROID_APPLICATION_ID          the APK's package name, e.g. com.example.sms
+#   SITE_URL                        e.g. https://sms-dashboard.example.com
+#   NEXT_PUBLIC_TURNSTILE_SITE_KEY  optional
+#   NEXT_PUBLIC_GOOGLE_CLIENT_ID    optional
+# Repository secrets:
+#   GOOGLE_SERVICES_JSON            google-services.json of the Firebase Android app
+#                                   registered for ANDROID_APPLICATION_ID
+#   ANDROID_KEYSTORE_BASE64         base64 of the release keystore
+#   ANDROID_KEY_ALIAS               the key's alias in it
+#   ANDROID_KEYSTORE_PASSWORD
+#   ANDROID_KEY_PASSWORD
+name: Fork release
+
+on:
+    schedule:
+        - cron: '0 18 * * *' # 02:00 Asia/Manila
+    workflow_dispatch:
+        inputs:
+            upstream_tag:
+                description: 'Upstream tag to build (empty: latest release)'
+                required: false
+                type: string
+            rebuild:
+                description: 'Build again even if released (next -fork.N)'
+                required: false
+                type: boolean
+                default: false
+
+permissions:
+    contents: write
+    packages: write
+    actions: write
+
+concurrency:
+    group: fork-release
+    cancel-in-progress: false
+
+env:
+    UPSTREAM: vernu/textbee
+
+jobs:
+    plan:
+        name: Check upstream
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        outputs:
+            upstream_tag: ${{ steps.plan.outputs.upstream_tag }}
+            version: ${{ steps.plan.outputs.version }}
+            build: ${{ steps.plan.outputs.build }}
+        steps:
+            # GitHub turns off scheduled workflows after 60 days without
+            # repository activity; re-enabling on every run keeps this one alive.
+            - name: Keep the schedule alive
+              env:
+                  GH_TOKEN: ${{ github.token }}
+              run: gh api -X PUT "repos/$GITHUB_REPOSITORY/actions/workflows/fork-release.yaml/enable"
+
+            - name: Plan
+              id: plan
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  INPUT_TAG: ${{ inputs.upstream_tag }}
+                  REBUILD: ${{ inputs.rebuild || false }}
+              run: |
+                  upstream_tag="${INPUT_TAG:-$(gh api "repos/$UPSTREAM/releases/latest" --jq .tag_name)}"
+                  released=$(gh release list -R "$GITHUB_REPOSITORY" --limit 200 --json tagName --jq '.[].tagName' \
+                      | grep -c "^${upstream_tag}-fork\.[0-9]*$" || true)
+
+                  build=true
+                  if [ "$released" -gt 0 ] && [ "$REBUILD" != "true" ]; then
+                      build=false
+                  fi
+
+                  version="${upstream_tag}-fork.$((released + 1))"
+                  {
+                      echo "upstream_tag=$upstream_tag"
+                      echo "version=$version"
+                      echo "build=$build"
+                  } >> "$GITHUB_OUTPUT"
+                  echo "Upstream $upstream_tag, $released fork release(s); build=$build ($version)" >> "$GITHUB_STEP_SUMMARY"
+
+    images:
+        name: Build and push images
+        needs: plan
+        if: needs.plan.outputs.build == 'true'
+        runs-on: ubuntu-latest
+        timeout-minutes: 45
+        steps:
+            - name: Check out upstream ${{ needs.plan.outputs.upstream_tag }}
+              uses: actions/checkout@v7
+              with:
+                  repository: ${{ env.UPSTREAM }}
+                  ref: ${{ needs.plan.outputs.upstream_tag }}
+                  persist-credentials: false
+
+            # Next.js inlines NEXT_PUBLIC_* at build time; the web Dockerfile
+            # copies the whole folder, so web/.env reaches the build.
+            - name: Write web/.env
+              env:
+                  API_BASE_URL: ${{ vars.API_BASE_URL }}
+                  SITE_URL: ${{ vars.SITE_URL }}
+                  TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
+                  GOOGLE_CLIENT_ID: ${{ vars.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
+              run: |
+                  test -n "$API_BASE_URL" || { echo "::error::Set the API_BASE_URL repository variable"; exit 1; }
+                  test -n "$SITE_URL" || { echo "::error::Set the SITE_URL repository variable"; exit 1; }
+                  {
+                      echo "NEXT_PUBLIC_API_BASE_URL=${API_BASE_URL%/}"
+                      echo "NEXT_PUBLIC_SITE_URL=${SITE_URL%/}"
+                      if [ -n "$TURNSTILE_SITE_KEY" ]; then echo "NEXT_PUBLIC_TURNSTILE_SITE_KEY=$TURNSTILE_SITE_KEY"; fi
+                      if [ -n "$GOOGLE_CLIENT_ID" ]; then echo "NEXT_PUBLIC_GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID"; fi
+                  } > web/.env
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Log in to ghcr.io
+              uses: docker/login-action@v3
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ github.token }}
+
+            - name: Image name
+              run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+
+            - name: Build and push API
+              uses: docker/build-push-action@v6
+              with:
+                  context: api
+                  platforms: linux/amd64
+                  push: true
+                  build-args: VERSION=${{ needs.plan.outputs.version }}
+                  tags: |
+                      ${{ env.IMAGE }}/api:${{ needs.plan.outputs.version }}
+                      ${{ env.IMAGE }}/api:latest
+
+            - name: Build and push web
+              uses: docker/build-push-action@v6
+              with:
+                  context: web
+                  platforms: linux/amd64
+                  push: true
+                  build-args: VERSION=${{ needs.plan.outputs.version }}
+                  tags: |
+                      ${{ env.IMAGE }}/web:${{ needs.plan.outputs.version }}
+                      ${{ env.IMAGE }}/web:latest
+
+    release:
+        name: Build APK and release
+        needs: [plan, images]
+        if: needs.plan.outputs.build == 'true'
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        steps:
+            - name: Check out upstream ${{ needs.plan.outputs.upstream_tag }}
+              uses: actions/checkout@v7
+              with:
+                  repository: ${{ env.UPSTREAM }}
+                  ref: ${{ needs.plan.outputs.upstream_tag }}
+                  persist-credentials: false
+
+            - name: Set up JDK 17
+              uses: actions/setup-java@v5
+              with:
+                  java-version: '17'
+                  distribution: 'temurin'
+
+            - name: Set up Gradle
+              uses: gradle/actions/setup-gradle@v6
+
+            - name: Point the app at this fork
+              env:
+                  API_BASE_URL: ${{ vars.API_BASE_URL }}
+                  APPLICATION_ID: ${{ vars.ANDROID_APPLICATION_ID }}
+                  GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+              run: |
+                  test -n "$API_BASE_URL" || { echo "::error::Set the API_BASE_URL repository variable"; exit 1; }
+                  test -n "$APPLICATION_ID" || { echo "::error::Set the ANDROID_APPLICATION_ID repository variable"; exit 1; }
+                  test -n "$GOOGLE_SERVICES_JSON" || { echo "::error::Set the GOOGLE_SERVICES_JSON secret"; exit 1; }
+
+                  gradle=android/app/build.gradle
+                  grep -q 'https://api.textbee.dev/api/v1/' "$gradle" \
+                      || { echo "::error::Upstream's prod API_BASE_URL moved; update this step"; exit 1; }
+                  grep -q 'applicationId "com.vernu.sms"' "$gradle" \
+                      || { echo "::error::Upstream's prod applicationId moved; update this step"; exit 1; }
+                  sed -i "s#https://api.textbee.dev/api/v1/#${API_BASE_URL%/}/#" "$gradle"
+                  sed -i "s#applicationId \"com.vernu.sms\"#applicationId \"${APPLICATION_ID}\"#" "$gradle"
+
+                  printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/src/prod/google-services.json
+
+            # Upstream signs release builds with ~/.android/debug.keystore. A
+            # throwaway one lets Gradle build; the APK is re-signed below.
+            - name: Build the prod APK
+              working-directory: android
+              run: |
+                  mkdir -p ~/.android
+                  keytool -genkeypair -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey \
+                      -keypass android -keyalg RSA -keysize 2048 -validity 1 -dname "CN=Throwaway"
+                  chmod +x gradlew
+                  ./gradlew assembleProdRelease
+
+            - name: Sign with the release key
+              env:
+                  KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+                  KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+                  KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+                  KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+                  VERSION: ${{ needs.plan.outputs.version }}
+              run: |
+                  for name in KEYSTORE_BASE64 KEY_ALIAS KEYSTORE_PASSWORD KEY_PASSWORD; do
+                      test -n "${!name}" || { echo "::error::Set the ANDROID_$name secret"; exit 1; }
+                  done
+
+                  keystore="$RUNNER_TEMP/release.jks"
+                  printf '%s' "$KEYSTORE_BASE64" | base64 -d > "$keystore"
+                  apksigner="$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)"
+                  apk="$RUNNER_TEMP/textbee-$VERSION.apk"
+
+                  "$apksigner" sign \
+                      --ks "$keystore" --ks-key-alias "$KEY_ALIAS" \
+                      --ks-pass env:KEYSTORE_PASSWORD --key-pass env:KEY_PASSWORD \
+                      --out "$apk" android/app/build/outputs/apk/prod/release/app-prod-release.apk
+                  "$apksigner" verify --print-certs "$apk" | grep 'SHA-256' >> "$GITHUB_STEP_SUMMARY"
+                  rm -f "$keystore"
+
+            - name: Publish the release
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  VERSION: ${{ needs.plan.outputs.version }}
+                  UPSTREAM_TAG: ${{ needs.plan.outputs.upstream_tag }}
+              run: |
+                  image="ghcr.io/${GITHUB_REPOSITORY,,}"
+                  gh release create "$VERSION" "$RUNNER_TEMP/textbee-$VERSION.apk" \
+                      -R "$GITHUB_REPOSITORY" \
+                      --target "$GITHUB_SHA" \
+                      --title "$VERSION" \
+                      --notes "Built from [$UPSTREAM $UPSTREAM_TAG](https://github.com/$UPSTREAM/releases/tag/$UPSTREAM_TAG).
+
+                  Images:
+                  - \`$image/api:$VERSION\`
+                  - \`$image/web:$VERSION\`"
