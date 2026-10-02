@@ -5,14 +5,32 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+// Release values come from Gradle properties (-PtextbeeApiBaseUrl=…), so the
+// fork's release workflow sets them without editing this file. An empty
+// optional link hides the button or row that would open it.
+def prop = { String name, String fallback -> (project.findProperty(name) ?: fallback).toString() }
+def apiBaseUrl = prop('textbeeApiBaseUrl', 'https://textbee-api.joowdx.dev/api/v1/').replaceAll('/+$', '') + '/'
+def links = [
+        WEB_BASE_URL : prop('textbeeWebBaseUrl', 'https://textbee.joowdx.dev').replaceAll('/+$', ''),
+        RELEASES_REPO: prop('textbeeReleasesRepo', 'joowdx/textbee'),
+        SUPPORT_URL  : prop('textbeeSupportUrl', ''),
+        COMMUNITY_URL: prop('textbeeCommunityUrl', ''),
+        DOCS_URL     : prop('textbeeDocsUrl', ''),
+        PRICING_URL  : prop('textbeePricingUrl', ''),
+        TERMS_URL    : prop('textbeeTermsUrl', ''),
+        PRIVACY_URL  : prop('textbeePrivacyUrl', ''),
+]
+
 android {
     compileSdk 34
 
     defaultConfig {
         minSdk 24
         targetSdk 34
-        versionCode 20
-        versionName "2.9.0"
+        versionCode prop('textbeeVersionCode', '20').toInteger()
+        versionName prop('textbeeVersionName', '2.9.0')
+
+        links.each { name, value -> buildConfigField "String", name, "\"${value}\"" }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -50,19 +68,19 @@ android {
     productFlavors {
         dev {
             dimension "environment"
-            applicationId "com.vernu.sms.dev"
+            applicationId prop('textbeeApplicationId', 'com.vernu.sms') + '.dev'
             versionNameSuffix "-dev"
-            buildConfigField "String", "API_BASE_URL", '"https://api.dev.textbee.dev/api/v1/"'
+            buildConfigField "String", "API_BASE_URL", "\"${prop('textbeeDevApiBaseUrl', apiBaseUrl)}\""
             buildConfigField "String", "ENVIRONMENT", '"development"'
-            resValue "string", "app_name", "textbee.dev (Dev)"
+            resValue "string", "app_name", "textbee (Dev)"
         }
         
         prod {
             dimension "environment"
-            applicationId "com.vernu.sms"
-            buildConfigField "String", "API_BASE_URL", '"https://api.textbee.dev/api/v1/"'
+            applicationId prop('textbeeApplicationId', 'com.vernu.sms')
+            buildConfigField "String", "API_BASE_URL", "\"${apiBaseUrl}\""
             buildConfigField "String", "ENVIRONMENT", '"production"'
-            resValue "string", "app_name", "textbee.dev"
+            resValue "string", "app_name", "textbee"
         }
     }
 
