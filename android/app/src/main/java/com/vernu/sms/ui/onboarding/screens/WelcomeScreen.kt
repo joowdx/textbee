@@ -1,7 +1,5 @@
 package com.vernu.sms.ui.onboarding.screens
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -15,6 +13,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.vernu.sms.Links
 import com.vernu.sms.R
 
 @Composable
@@ -70,7 +69,7 @@ fun WelcomeScreen(
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             listOf(
-                "Create a free account at textbee.dev",
+                "Sign in at ${Links.webHost}",
                 "Connect this phone as your SMS gateway",
                 "Send SMS via API from any app or automation"
             ).forEachIndexed { i, step ->
@@ -119,29 +118,10 @@ fun WelcomeScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         TextButton(
-            onClick = {
-                context.startActivity(
-                    Intent(Intent.ACTION_VIEW, Uri.parse("https://app.textbee.dev/register"))
-                )
-            }
+            onClick = { Links.open(context, Links.web) }
         ) {
             Text(
-                text = "Don't have an account? Sign up free",
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        TextButton(
-            onClick = {
-                context.startActivity(
-                    Intent(Intent.ACTION_VIEW, Uri.parse("https://textbee.dev"))
-                )
-            }
-        ) {
-            Text(
-                text = "textbee.dev",
+                text = Links.webHost,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

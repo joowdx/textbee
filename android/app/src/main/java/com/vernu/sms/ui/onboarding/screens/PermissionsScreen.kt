@@ -1,5 +1,6 @@
 package com.vernu.sms.ui.onboarding.screens
 
+import com.vernu.sms.Links
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -162,15 +163,13 @@ fun PermissionsScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
-            TextButton(
-                onClick = {
-                    context.startActivity(
-                        Intent(Intent.ACTION_VIEW, Uri.parse("https://textbee.dev/privacy-policy"))
-                    )
-                },
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text("Privacy Policy", style = MaterialTheme.typography.bodySmall)
+            if (Links.privacy.isNotEmpty()) {
+                TextButton(
+                    onClick = { Links.open(context, Links.privacy) },
+                    contentPadding = PaddingValues(0.dp)
+                ) {
+                    Text("Privacy Policy", style = MaterialTheme.typography.bodySmall)
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))

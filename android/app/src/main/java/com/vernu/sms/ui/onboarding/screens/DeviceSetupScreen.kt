@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.vernu.sms.Links
 import com.vernu.sms.ui.onboarding.OnboardingViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,7 +77,7 @@ fun DeviceSetupScreen(
                         onValueChange = { viewModel.setDeviceId(it) },
                         label = { Text("Device ID") },
                         placeholder = { Text("Enter your Device ID") },
-                        supportingText = { Text("Find it at textbee.dev/dashboard → Devices") },
+                        supportingText = { Text("Find it at ${Links.webHost}/dashboard → Devices") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )

@@ -51,7 +51,7 @@ fun ComposeScreen(
                 try {
                     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(upgradeUrl)))
                 } catch (e: ActivityNotFoundException) {
-                    snackbarHostState.showSnackbar("No browser found. Open textbee.dev/pricing on another device.")
+                    snackbarHostState.showSnackbar("No browser found. Open $upgradeUrl on another device.")
                 }
             }
             viewModel.clearError()

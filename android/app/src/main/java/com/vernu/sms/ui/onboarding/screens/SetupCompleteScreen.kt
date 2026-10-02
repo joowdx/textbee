@@ -1,8 +1,7 @@
 package com.vernu.sms.ui.onboarding.screens
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.animation.core.*
+import com.vernu.sms.Links
 import com.vernu.sms.AppConstants
 import com.vernu.sms.helpers.SharedPreferenceHelper
 import androidx.compose.foundation.background
@@ -202,11 +201,7 @@ fun SetupCompleteScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedButton(
-            onClick = {
-                context.startActivity(
-                    Intent(Intent.ACTION_VIEW, Uri.parse("https://app.textbee.dev/dashboard"))
-                )
-            },
+            onClick = { Links.open(context, Links.dashboard) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp)
@@ -216,24 +211,20 @@ fun SetupCompleteScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        TextButton(
-            onClick = {
-                context.startActivity(
-                    Intent(Intent.ACTION_VIEW, Uri.parse("https://textbee.dev/docs"))
+        if (Links.docs.isNotEmpty()) {
+            TextButton(
+                onClick = { Links.open(context, Links.docs) }
+            ) {
+                Text(
+                    text = "New to textbee? Read the quickstart guide",
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
-        ) {
-            Text(
-                text = "New to textbee? Read the quickstart guide",
-                style = MaterialTheme.typography.bodySmall
-            )
         }
 
         TextButton(
             onClick = {
-                context.startActivity(
-                    Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/textbee/textbee?ref=android-star"))
-                )
+                Links.open(context, Links.repo)
             }
         ) {
             Text(

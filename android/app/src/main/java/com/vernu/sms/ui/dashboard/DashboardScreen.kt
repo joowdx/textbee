@@ -44,6 +44,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.vernu.sms.Links
 import com.vernu.sms.R
 import com.vernu.sms.dtos.SimInfoDTO
 import com.vernu.sms.dtos.SubscriptionResponse
@@ -114,7 +115,7 @@ fun DashboardScreen(
                         Spacer(modifier = Modifier.width(8.dp))
                         Column {
                             Text(
-                                text = "textbee.dev",
+                                text = "textbee",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
@@ -561,22 +562,16 @@ private fun SubscriptionCard(
                             }
                         }
                         if (isFree) {
-                            OutlinedButton(
-                                onClick = {
-                                    context.startActivity(
-                                        Intent(Intent.ACTION_VIEW, Uri.parse("https://textbee.dev/pricing?ref=android-dashboard"))
-                                    )
+                            if (Links.pricing.isNotEmpty()) {
+                                OutlinedButton(
+                                    onClick = { Links.open(context, Links.pricing) }
+                                ) {
+                                    Text("Upgrade")
                                 }
-                            ) {
-                                Text("Upgrade")
                             }
                         } else {
                             TextButton(
-                                onClick = {
-                                    context.startActivity(
-                                        Intent(Intent.ACTION_VIEW, Uri.parse("https://app.textbee.dev/dashboard/account"))
-                                    )
-                                }
+                                onClick = { Links.open(context, Links.account) }
                             ) {
                                 Text("Manage")
                             }
@@ -584,12 +579,14 @@ private fun SubscriptionCard(
                     }
 
                     if (isFree) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Unlock higher limits, more devices & priority support",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        if (Links.pricing.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Unlock higher limits, more devices & priority support",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     } else {
                         subscription.usage?.let { usage ->
                             Spacer(modifier = Modifier.height(16.dp))
@@ -675,28 +672,22 @@ private fun QuickActionsSection() {
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             OutlinedButton(
-                onClick = {
-                    context.startActivity(
-                        Intent(Intent.ACTION_VIEW, Uri.parse("https://app.textbee.dev/dashboard"))
-                    )
-                },
+                onClick = { Links.open(context, Links.dashboard) },
                 modifier = Modifier.weight(1f)
             ) {
                 Icon(Icons.Default.OpenInBrowser, contentDescription = null, modifier = Modifier.size(16.dp))
                 Spacer(modifier = Modifier.width(6.dp))
                 Text("Dashboard")
             }
-            OutlinedButton(
-                onClick = {
-                    context.startActivity(
-                        Intent(Intent.ACTION_VIEW, Uri.parse("https://textbee.dev/docs"))
-                    )
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Icon(Icons.Default.MenuBook, contentDescription = null, modifier = Modifier.size(16.dp))
-                Spacer(modifier = Modifier.width(6.dp))
-                Text("Explore Docs")
+            if (Links.docs.isNotEmpty()) {
+                OutlinedButton(
+                    onClick = { Links.open(context, Links.docs) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.MenuBook, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Explore Docs")
+                }
             }
         }
     }

@@ -3,6 +3,7 @@ package com.vernu.sms.ui.messages
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.vernu.sms.Links
 import com.vernu.sms.ApiManagerKt
 import com.vernu.sms.AppConstants
 import com.vernu.sms.dtos.SendSmsRequest
@@ -24,7 +25,7 @@ data class ComposeState(
     val sendSuccess: Boolean = false
 )
 
-const val UPGRADE_URL = "https://textbee.dev/pricing?ref=android-quota"
+val UPGRADE_URL: String? = Links.pricing.ifEmpty { null }
 
 class ComposeViewModel(app: Application) : AndroidViewModel(app) {
 

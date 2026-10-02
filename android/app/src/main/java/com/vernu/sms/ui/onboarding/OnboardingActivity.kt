@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
+import com.vernu.sms.Links
 import com.vernu.sms.ui.main.NewMainActivity
 import com.vernu.sms.ui.onboarding.screens.*
 import com.vernu.sms.ui.theme.TextbeeTheme
@@ -37,7 +38,7 @@ class OnboardingActivity : ComponentActivity() {
                     viewModel = viewModel,
                     onScanQr = {
                         qrLauncher.launch(ScanOptions().apply {
-                            setPrompt("Scan the QR code from textbee.dev/dashboard")
+                            setPrompt("Scan the QR code from ${Links.webHost}/dashboard")
                             setBeepEnabled(true)
                             setOrientationLocked(false)
                         })

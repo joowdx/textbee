@@ -1,7 +1,5 @@
 package com.vernu.sms.ui.onboarding.screens
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -21,6 +19,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.vernu.sms.Links
 import com.vernu.sms.ui.onboarding.OnboardingViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,23 +67,10 @@ fun CredentialsScreen(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Enter your API key from your textbee.dev dashboard",
+                text = "Enter your API key from your dashboard at ${Links.webHost}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            TextButton(
-                onClick = {
-                    context.startActivity(
-                        Intent(Intent.ACTION_VIEW, Uri.parse("https://app.textbee.dev/register"))
-                    )
-                },
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text(
-                    text = "Don't have an account? Sign up free",
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -152,16 +138,14 @@ private fun QrTab(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "1. Go to your textbee.dev dashboard",
+                    text = "1. Go to your dashboard at ${Links.webHost}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f)
                 )
                 TextButton(
                     onClick = {
-                        context.startActivity(
-                            Intent(Intent.ACTION_VIEW, Uri.parse("https://app.textbee.dev/dashboard"))
-                        )
+                        Links.open(context, Links.dashboard)
                     },
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
                 ) {
@@ -271,14 +255,12 @@ private fun ManualTab(
     )
     TextButton(
         onClick = {
-            context.startActivity(
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://app.textbee.dev/dashboard"))
-            )
+Links.open(context, Links.dashboard)
         },
         contentPadding = PaddingValues(0.dp)
     ) {
         Text(
-            text = "Get your API key at app.textbee.dev/dashboard",
+            text = "Get your API key at ${Links.webHost}/dashboard",
             style = MaterialTheme.typography.bodySmall
         )
     }
