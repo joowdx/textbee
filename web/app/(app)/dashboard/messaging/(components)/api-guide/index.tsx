@@ -243,7 +243,7 @@ export default function ApiGuide() {
           </Button>
           <Button asChild variant='outline' size='sm'>
             <a
-              href='https://api.textbee.dev/'
+              href={API_BASE_URL.replace(/\/api\/v1$/, '')}
               target='_blank'
               rel='noopener noreferrer'
             >

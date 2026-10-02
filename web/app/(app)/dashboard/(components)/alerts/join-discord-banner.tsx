@@ -10,11 +10,14 @@ import {
   openDiscordInvite,
   safeGetDiscordFlag,
 } from '@/lib/discord-community'
+import { ExternalLinks } from '@/config/external-links'
 
 export default function JoinDiscordBanner() {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
+    // No community link configured: nothing to invite anyone to.
+    if (!ExternalLinks.discord) return
     const dismissed =
       safeGetDiscordFlag(DISCORD_STORAGE_KEYS.BANNER_DISMISSED) === '1'
     const joined =

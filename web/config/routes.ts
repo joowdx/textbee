@@ -1,8 +1,8 @@
 export const Routes = {
-  landingPage: 'https://textbee.dev',
-  contribute: 'https://textbee.dev/contribute',
-  useCases: 'https://textbee.dev/use-cases',
-  quickstart: 'https://textbee.dev/quickstart',
+  landingPage: process.env.NEXT_PUBLIC_SITE_URL || '/',
+  contribute: '',
+  useCases: '',
+  quickstart: process.env.NEXT_PUBLIC_DOCS_URL || '',
   login: '/login',
   register: '/register',
   logout: '/logout',
@@ -11,9 +11,10 @@ export const Routes = {
 
   dashboard: '/dashboard',
 
-  downloadAndroidApp: 'https://textbee.dev/download',
-  privacyPolicy: 'https://textbee.dev/privacy-policy',
-  refundPolicy: 'https://textbee.dev/refund-policy',
-  termsOfService: 'https://textbee.dev/terms-of-service',
-  statusPage: 'https://status.textbee.dev',
+  downloadAndroidApp: `https://github.com/${process.env.NEXT_PUBLIC_RELEASES_REPO || 'joowdx/textbee'}/releases/latest`,
+  privacyPolicy: process.env.NEXT_PUBLIC_PRIVACY_URL || '',
+  refundPolicy: process.env.NEXT_PUBLIC_REFUND_URL || '',
+  termsOfService: process.env.NEXT_PUBLIC_TERMS_URL || '',
+  statusPage: process.env.NEXT_PUBLIC_STATUS_URL || '',
+  pricing: process.env.NEXT_PUBLIC_PRICING_URL || '',
 }

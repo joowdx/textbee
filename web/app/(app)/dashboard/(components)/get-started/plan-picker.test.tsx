@@ -65,11 +65,12 @@ describe('PlanPicker', () => {
   })
 
   // A failed or empty plans response must never fall back to a made-up price.
-  it('points to the pricing page when prices are unknown', () => {
+  // With no pricing URL configured, the fallback link stays hidden too.
+  it('does not invent prices when they are unknown', () => {
     useBillingPlans.mockReturnValue({ data: undefined, isPending: false })
     renderPicker()
 
-    expect(screen.getAllByRole('link', { name: /See pricing/ })).toHaveLength(2)
+    expect(screen.queryByRole('link', { name: /See pricing/ })).not.toBeInTheDocument()
     expect(screen.queryByText(/billed yearly/)).not.toBeInTheDocument()
     expect(screen.queryByText(/Save \d+% yearly/)).not.toBeInTheDocument()
     expect(screen.getByText('$0')).toBeInTheDocument()

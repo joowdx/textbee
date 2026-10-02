@@ -35,6 +35,8 @@ import {
 import { CRYPTO_ADDRESSES } from '@/lib/constants'
 import Image from 'next/image'
 
+const securityEmail = process.env.NEXT_PUBLIC_SECURITY_EMAIL
+
 export default function ContributePage() {
   const { toast } = useToast()
 
@@ -78,12 +80,14 @@ export default function ContributePage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <Button className='w-full' asChild>
-                      <Link href={ExternalLinks.patreon} target='_blank'>
-                        <Heart className='mr-2 h-4 w-4' />
-                        Support on Patreon
-                      </Link>
-                    </Button>
+                    {ExternalLinks.patreon ? (
+                      <Button className='w-full' asChild>
+                        <Link href={ExternalLinks.patreon} target='_blank'>
+                          <Heart className='mr-2 h-4 w-4' />
+                          Support on Patreon
+                        </Link>
+                      </Button>
+                    ) : null}
                   </CardContent>
                 </Card>
               </div>
@@ -96,12 +100,14 @@ export default function ContributePage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <Button variant='outline' className='w-full' asChild>
-                      <Link href={ExternalLinks.polar} target='_blank'>
-                        <Heart className='mr-2 h-4 w-4' />
-                        Donate on Polar
-                      </Link>
-                    </Button>
+                    {ExternalLinks.polar ? (
+                      <Button variant='outline' className='w-full' asChild>
+                        <Link href={ExternalLinks.polar} target='_blank'>
+                          <Heart className='mr-2 h-4 w-4' />
+                          Donate on Polar
+                        </Link>
+                      </Button>
+                    ) : null}
                   </CardContent>
                 </Card>
               </div>
@@ -187,12 +193,14 @@ export default function ContributePage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button className='w-full' asChild>
-                    <Link href={ExternalLinks.github} target='_blank'>
-                      <Star className='mr-2 h-4 w-4' />
-                      Star on GitHub
-                    </Link>
-                  </Button>
+                  {ExternalLinks.github ? (
+                    <Button className='w-full' asChild>
+                      <Link href={ExternalLinks.github} target='_blank'>
+                        <Star className='mr-2 h-4 w-4' />
+                        Star on GitHub
+                      </Link>
+                    </Button>
+                  ) : null}
                 </CardContent>
               </Card>
 
@@ -204,15 +212,17 @@ export default function ContributePage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button className='w-full' variant='outline' asChild>
-                    <Link
-                      href={`${ExternalLinks.github}/issues/new`}
-                      target='_blank'
-                    >
-                      <MessageSquare className='mr-2 h-4 w-4' />
-                      Create Issue
-                    </Link>
-                  </Button>
+                  {ExternalLinks.github ? (
+                    <Button className='w-full' variant='outline' asChild>
+                      <Link
+                        href={`${ExternalLinks.github}/issues/new`}
+                        target='_blank'
+                      >
+                        <MessageSquare className='mr-2 h-4 w-4' />
+                        Create Issue
+                      </Link>
+                    </Button>
+                  ) : null}
                 </CardContent>
               </Card>
 
@@ -220,25 +230,34 @@ export default function ContributePage() {
                 <CardHeader>
                   <CardTitle className='text-lg'>Security Reports</CardTitle>
                   <CardDescription>
-                    Report security vulnerabilities privately to{' '}
-                    <a href='mailto:security@textbee.dev'>
-                      security@textbee.dev
-                    </a>
+                    {securityEmail ? (
+                      <>
+                        Report security vulnerabilities privately to{' '}
+                        <a href={`mailto:${securityEmail}`}>{securityEmail}</a>
+                      </>
+                    ) : (
+                      'Report security vulnerabilities privately.'
+                    )}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button className='w-full' variant='outline' asChild>
-                    <Link href='mailto:security@textbee.dev'>
-                      <Shield className='mr-2 h-4 w-4' />
-                      Report Vulnerability
-                    </Link>
-                  </Button>
+                  {securityEmail ? (
+                    <Button className='w-full' variant='outline' asChild>
+                      <Link href={`mailto:${securityEmail}`}>
+                        <Shield className='mr-2 h-4 w-4' />
+                        Report Vulnerability
+                      </Link>
+                    </Button>
+                  ) : null}
                 </CardContent>
               </Card>
             </div>
           </CardContent>
         </Card>
 
+        {(ExternalLinks.discord ||
+          ExternalLinks.twitter ||
+          ExternalLinks.linkedin) && (
         <Card className='overflow-hidden'>
           <CardHeader>
             <CardTitle className='flex items-center gap-2'>
@@ -252,27 +271,34 @@ export default function ContributePage() {
           </CardHeader>
           <CardContent>
             <div className='grid grid-cols-1 md:grid-cols-3 gap-3'>
-              <Button variant='outline' asChild>
-                <Link href={ExternalLinks.discord} target='_blank'>
-                  <MessageSquare className='mr-2 h-4 w-4' />
-                  Join Discord
-                </Link>
-              </Button>
-              <Button variant='outline' asChild>
-                <Link href={ExternalLinks.twitter} target='_blank'>
-                  <Twitter className='mr-2 h-4 w-4' />
-                  Follow us on X (Twitter)
-                </Link>
-              </Button>
-              <Button variant='outline' asChild>
-                <Link href={ExternalLinks.linkedin} target='_blank'>
-                  <Linkedin className='mr-2 h-4 w-4' />
-                  Connect on LinkedIn
-                </Link>
-              </Button>
+              {ExternalLinks.discord ? (
+                <Button variant='outline' asChild>
+                  <Link href={ExternalLinks.discord} target='_blank'>
+                    <MessageSquare className='mr-2 h-4 w-4' />
+                    Join Discord
+                  </Link>
+                </Button>
+              ) : null}
+              {ExternalLinks.twitter ? (
+                <Button variant='outline' asChild>
+                  <Link href={ExternalLinks.twitter} target='_blank'>
+                    <Twitter className='mr-2 h-4 w-4' />
+                    Follow us on X (Twitter)
+                  </Link>
+                </Button>
+              ) : null}
+              {ExternalLinks.linkedin ? (
+                <Button variant='outline' asChild>
+                  <Link href={ExternalLinks.linkedin} target='_blank'>
+                    <Linkedin className='mr-2 h-4 w-4' />
+                    Connect on LinkedIn
+                  </Link>
+                </Button>
+              ) : null}
             </div>
           </CardContent>
         </Card>
+        )}
       </div>
     </div>
   )

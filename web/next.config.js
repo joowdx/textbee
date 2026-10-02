@@ -4,7 +4,7 @@ const nextConfig = {
   output: 'standalone',
 
   async redirects() {
-    return [
+    const redirects = [
       {
         source: '/',
         destination: '/dashboard',
@@ -19,17 +19,22 @@ const nextConfig = {
       },
       {
         source: '/android',
-        destination: 'https://dl.textbee.dev',
-        permanent: false,
-      },
-      // The invite itself lives behind textbee.dev/discord, so it can rotate
-      // in one place.
-      {
-        source: '/discord',
-        destination: 'https://textbee.dev/discord',
+        destination: `https://github.com/${process.env.NEXT_PUBLIC_RELEASES_REPO || 'joowdx/textbee'}/releases/latest`,
         permanent: false,
       },
     ]
+
+    // Included only when NEXT_PUBLIC_COMMUNITY_URL is set, so the invite can
+    // rotate in one place.
+    if (process.env.NEXT_PUBLIC_COMMUNITY_URL) {
+      redirects.push({
+        source: '/discord',
+        destination: process.env.NEXT_PUBLIC_COMMUNITY_URL,
+        permanent: false,
+      })
+    }
+
+    return redirects
   },
 }
 

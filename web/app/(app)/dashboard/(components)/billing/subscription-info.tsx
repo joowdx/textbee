@@ -468,21 +468,23 @@ export default function SubscriptionInfo() {
 
           {/* Same label as the onboarding plan picker, pointing at the same
               page, so the two do not read as different destinations. */}
-          <Button
-            size='sm'
-            variant='link'
-            className='h-auto px-0 text-xs text-muted-foreground'
-            asChild
-          >
-            <a
-              href={`${Routes.landingPage}/pricing`}
-              target='_blank'
-              rel='noopener noreferrer'
+          {Routes.pricing ? (
+            <Button
+              size='sm'
+              variant='link'
+              className='h-auto px-0 text-xs text-muted-foreground'
+              asChild
             >
-              Compare all plans
-              <ExternalLink className='ml-1 h-3 w-3' aria-hidden />
-            </a>
-          </Button>
+              <a
+                href={Routes.pricing}
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                Compare all plans
+                <ExternalLink className='ml-1 h-3 w-3' aria-hidden />
+              </a>
+            </Button>
+          ) : null}
         </div>
       </section>
 

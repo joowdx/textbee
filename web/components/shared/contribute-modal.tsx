@@ -121,7 +121,7 @@ export function ContributeModal() {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className='max-w-md max-h-[90vh] overflow-y-auto flex flex-col'>
           <DialogHeader>
-            <DialogTitle>Support textbee.dev</DialogTitle>
+            <DialogTitle>Support textbee</DialogTitle>
             <DialogDescription>
               Your contribution helps keep this project alive and growing.
             </DialogDescription>
@@ -137,18 +137,22 @@ export function ContributeModal() {
               </CardHeader>
               <CardContent>
                 <div className='space-y-4'>
-                  <Button className='w-full' asChild>
-                    <Link href={ExternalLinks.patreon} target='_blank'>
-                      <Heart className='mr-2 h-4 w-4' />
-                      Monthly Support on Patreon
-                    </Link>
-                  </Button>
-                  <Button variant='outline' className='w-full' asChild>
-                    <Link href={ExternalLinks.polar} target='_blank'>
-                      <Star className='mr-2 h-4 w-4' />
-                      One-time Donation via Polar.sh
-                    </Link>
-                  </Button>
+                  {ExternalLinks.patreon ? (
+                    <Button className='w-full' asChild>
+                      <Link href={ExternalLinks.patreon} target='_blank'>
+                        <Heart className='mr-2 h-4 w-4' />
+                        Monthly Support on Patreon
+                      </Link>
+                    </Button>
+                  ) : null}
+                  {ExternalLinks.polar ? (
+                    <Button variant='outline' className='w-full' asChild>
+                      <Link href={ExternalLinks.polar} target='_blank'>
+                        <Star className='mr-2 h-4 w-4' />
+                        One-time Donation via Polar.sh
+                      </Link>
+                    </Button>
+                  ) : null}
                   <Button
                     variant='outline'
                     className='w-full'
@@ -169,21 +173,25 @@ export function ContributeModal() {
               </CardHeader>
               <CardContent>
                 <div className='flex flex-wrap gap-4'>
-                  <Button asChild>
-                    <Link href={ExternalLinks.github} target='_blank'>
-                      <Star className='mr-2 h-4 w-4' />
-                      Star on GitHub
-                    </Link>
-                  </Button>
-                  <Button variant='outline' asChild>
-                    <Link
-                      href={`${ExternalLinks.github}/issues/new`}
-                      target='_blank'
-                    >
-                      <MessageSquare className='mr-2 h-4 w-4' />
-                      Report Issue
-                    </Link>
-                  </Button>
+                  {ExternalLinks.github ? (
+                    <Button asChild>
+                      <Link href={ExternalLinks.github} target='_blank'>
+                        <Star className='mr-2 h-4 w-4' />
+                        Star on GitHub
+                      </Link>
+                    </Button>
+                  ) : null}
+                  {ExternalLinks.github ? (
+                    <Button variant='outline' asChild>
+                      <Link
+                        href={`${ExternalLinks.github}/issues/new`}
+                        target='_blank'
+                      >
+                        <MessageSquare className='mr-2 h-4 w-4' />
+                        Report Issue
+                      </Link>
+                    </Button>
+                  ) : null}
                 </div>
               </CardContent>
             </Card>

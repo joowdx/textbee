@@ -56,12 +56,14 @@ export default function RegisterHelpDialog({
           </li>
         </ol>
         <DialogFooter className='flex flex-col gap-2 sm:flex-row sm:justify-between'>
-          <Button variant='outline' size='sm' asChild>
-            <a href={Routes.quickstart} target='_blank' rel='noreferrer'>
-              View full guide
-              <ExternalLink className='ml-1 h-3 w-3' />
-            </a>
-          </Button>
+          {Routes.quickstart ? (
+            <Button variant='outline' size='sm' asChild>
+              <a href={Routes.quickstart} target='_blank' rel='noreferrer'>
+                View full guide
+                <ExternalLink className='ml-1 h-3 w-3' />
+              </a>
+            </Button>
+          ) : null}
           <Button size='sm' onClick={() => onOpenChange(false)}>
             Close
           </Button>

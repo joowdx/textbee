@@ -12,11 +12,11 @@ const links = [
   { label: 'Quick start', href: Routes.quickstart },
   { label: 'Download app', href: Routes.downloadAndroidApp },
   { label: 'Contribute', href: Routes.contribute },
-  { label: 'Discord', href: ExternalLinks.discord },
+  { label: 'Community', href: ExternalLinks.discord },
   { label: 'Privacy', href: Routes.privacyPolicy },
   { label: 'Terms', href: Routes.termsOfService },
   { label: 'Refund', href: Routes.refundPolicy },
-]
+].filter((link) => link.href)
 
 const linkClass =
   'text-sm text-muted-foreground transition-colors hover:text-foreground'
@@ -36,7 +36,7 @@ export default function Footer() {
             className='h-5 w-5 rounded-full bg-white'
           />
           <span className='text-sm text-muted-foreground'>
-            © {new Date().getFullYear()} textbee.dev
+            © {new Date().getFullYear()} textbee
           </span>
         </div>
 
@@ -57,15 +57,17 @@ export default function Footer() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href={Routes.statusPage}
-            target='_blank'
-            rel='nofollow noopener noreferrer'
-            className='inline-flex items-center gap-1.5 rounded-full border bg-muted/70 px-2.5 py-1 text-sm font-medium text-success transition-colors hover:bg-muted'
-          >
-            <Activity className='h-3.5 w-3.5' />
-            Status
-          </Link>
+          {Routes.statusPage ? (
+            <Link
+              href={Routes.statusPage}
+              target='_blank'
+              rel='nofollow noopener noreferrer'
+              className='inline-flex items-center gap-1.5 rounded-full border bg-muted/70 px-2.5 py-1 text-sm font-medium text-success transition-colors hover:bg-muted'
+            >
+              <Activity className='h-3.5 w-3.5' />
+              Status
+            </Link>
+          ) : null}
         </nav>
       </div>
     </footer>

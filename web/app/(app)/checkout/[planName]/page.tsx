@@ -43,15 +43,20 @@ const formatPlan = (plan: string, interval: string) =>
 function MoneyBackNote({ interval }: { interval: BillingInterval }) {
   return (
     <p className='text-center text-xs text-muted-foreground'>
-      {MONEY_BACK_DAYS[interval]}-day money-back guarantee.{' '}
-      <Link
-        href={Routes.refundPolicy}
-        target='_blank'
-        rel='noopener noreferrer'
-        className='underline underline-offset-2'
-      >
-        Refund policy
-      </Link>
+      {MONEY_BACK_DAYS[interval]}-day money-back guarantee.
+      {Routes.refundPolicy ? (
+        <>
+          {' '}
+          <Link
+            href={Routes.refundPolicy}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='underline underline-offset-2'
+          >
+            Refund policy
+          </Link>
+        </>
+      ) : null}
     </p>
   )
 }
@@ -130,7 +135,7 @@ export default function CheckoutPage({
         const serverMessage = apiErrorMessage(error)
         setError(
           serverMessage ||
-            'Failed to create checkout session. Please try again or contact billing@textbee.dev.',
+            'Failed to create checkout session. Please try again or contact support.',
         )
         console.error(serverMessage)
         setIsSubmitting(false)
@@ -155,7 +160,7 @@ export default function CheckoutPage({
       const serverMessage = apiErrorMessage(error)
       setError(
         serverMessage ||
-          'Failed to change your plan. Please try again or contact billing@textbee.dev.',
+          'Failed to change your plan. Please try again or contact support.',
       )
       console.error(serverMessage)
       setIsConfirming(false)

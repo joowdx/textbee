@@ -36,6 +36,7 @@ export function recordDiscordModalShown() {
 }
 
 export function openDiscordInvite() {
+  if (!ExternalLinks.discord) return
   window.open(ExternalLinks.discord, '_blank', 'noopener,noreferrer')
   markDiscordJoined()
 }

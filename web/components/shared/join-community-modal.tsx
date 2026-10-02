@@ -15,6 +15,7 @@ import {
   recordDiscordModalShown,
   safeGetDiscordFlag,
 } from '@/lib/discord-community'
+import { ExternalLinks } from '@/config/external-links'
 
 const SHOW_INTERVAL = 1 * 24 * 60 * 60 * 1000 // 1 days in milliseconds
 const RANDOM_CHANCE = 0.2 // 20% chance to show when eligible
@@ -24,6 +25,7 @@ export const JoinCommunityModal = () => {
 
   useEffect(() => {
     const checkAndShowModal = () => {
+      if (!ExternalLinks.discord) return
       const hasJoined =
         safeGetDiscordFlag(STORAGE_KEYS.HAS_JOINED) === 'true'
       if (hasJoined) return

@@ -171,14 +171,14 @@ describe('SubscriptionInfo', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('can still reach the portal and the pricing page', () => {
+    it('can still reach the customer portal', () => {
       render(<SubscriptionInfo />)
       expect(
         screen.getByRole('link', { name: /Manage subscription/i })
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('link', { name: /Compare all plans/ })
-      ).toBeInTheDocument()
+        screen.queryByRole('link', { name: /Compare all plans/ })
+      ).not.toBeInTheDocument()
     })
   })
 
@@ -243,13 +243,13 @@ describe('SubscriptionInfo', () => {
     expect(screen.getByText('Unknown')).toBeInTheDocument()
   })
 
-  it('always offers the pricing page', () => {
+  it('hides the pricing page when it is not configured', () => {
     setSubscription(freeSubscription)
     render(<SubscriptionInfo />)
 
     expect(
-      screen.getByRole('link', { name: /Compare all plans/ })
-    ).toHaveAttribute('href', 'https://textbee.dev/pricing')
+      screen.queryByRole('link', { name: /Compare all plans/ })
+    ).not.toBeInTheDocument()
   })
 
   // The loading state used to be a 16px spinner alone in the content column,

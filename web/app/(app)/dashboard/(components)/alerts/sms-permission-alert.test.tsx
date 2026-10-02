@@ -28,10 +28,7 @@ describe('SmsPermissionAlert', () => {
 
     expect(await screen.findByText('Your phone cannot send SMS.')).toBeTruthy()
     expect(screen.getByText(/The textbee app on Pixel 8 does not have SMS permission/)).toBeTruthy()
-    const guide = screen.getByRole('link', { name: /show me how/i })
-    expect(guide.getAttribute('href')).toContain(
-      'textbee.dev/blog/android-15-send-sms-permission-guide?utm_source=dashboard'
-    )
+    expect(screen.queryByRole('link', { name: /show me how/i })).toBeNull()
     expect(
       screen.getByRole('link', { name: /view messages/i }).getAttribute('href')
     ).toBe('/dashboard/messaging/history')

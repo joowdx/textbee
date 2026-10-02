@@ -42,7 +42,7 @@ export default function InlineRegisterPanel() {
               rel='noreferrer'
               className='font-medium text-primary underline-offset-4 hover:underline'
             >
-              textbee.dev/download
+              {Routes.downloadAndroidApp}
             </a>
             .
           </li>

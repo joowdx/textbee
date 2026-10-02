@@ -70,18 +70,20 @@ const AddDeviceDialog = forwardRef<AddDeviceHandle>(function AddDeviceDialog(
               the app instead
             </li>
             <li>
-              Open the textbee.dev app and scan the QR code or paste the key
+              Open the textbee app and scan the QR code or paste the key
               manually. Your device should appear in the list when the link
               succeeds.
             </li>
           </ol>
           <DialogFooter className='flex-col gap-2 sm:flex-row sm:justify-between'>
-            <Button variant='outline' size='sm' asChild>
-              <a href={Routes.quickstart} target='_blank' rel='noreferrer'>
-                Full guide
-                <ExternalLink className='ml-1 h-3 w-3' />
-              </a>
-            </Button>
+            {Routes.quickstart ? (
+              <Button variant='outline' size='sm' asChild>
+                <a href={Routes.quickstart} target='_blank' rel='noreferrer'>
+                  Full guide
+                  <ExternalLink className='ml-1 h-3 w-3' />
+                </a>
+              </Button>
+            ) : null}
             <div className='flex w-full gap-2 sm:w-auto'>
               <Button
                 variant='outline'

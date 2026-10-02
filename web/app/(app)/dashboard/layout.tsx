@@ -18,6 +18,7 @@ import {
   type NavItem,
 } from './(components)/nav-items'
 import { cn } from '@/lib/utils'
+import { Routes } from '@/config/routes'
 
 export default function DashboardLayout({
   children,
@@ -33,7 +34,7 @@ export default function DashboardLayout({
     // One feed query, shared by the tile slot and the modal host, so they cannot
     // disagree about which implementation is live.
     <NotificationProvider>
-    <div className='min-h-[calc(100vh-3.5rem)]'>
+    <div className='min-h-[calc(100vh-3.5rem-1px)]'>
       {/* Visible only on focus. Without it, keyboard users tab through the
           whole sidebar on every page before reaching the content. */}
       <a
@@ -63,23 +64,27 @@ export default function DashboardLayout({
           </nav>
         </div>
         <div className='space-y-3 border-t border-border px-4 py-3'>
-          <p className='text-xs text-muted-foreground'>
-            Need help?{' '}
-            <a
-              href='https://textbee.dev/quickstart'
-              target='_blank'
-              rel='noreferrer'
-              className='font-medium text-primary hover:underline'
-            >
-              Quick start
-            </a>
-          </p>
+          {Routes.quickstart ? (
+            <p className='text-xs text-muted-foreground'>
+              Need help?{' '}
+              <a
+                href={Routes.quickstart}
+                target='_blank'
+                rel='noreferrer'
+                className='font-medium text-primary hover:underline'
+              >
+                Quick start
+              </a>
+            </p>
+          ) : null}
           <ThemeToggle />
         </div>
       </aside>
 
-      {/* Main content, offset for the fixed sidebar on desktop. */}
-      <div className='md:pl-60'>
+      {/* Main content, offset for the fixed sidebar on desktop. At least the
+          viewport tall less the header (h-14 plus its 1px border), so the
+          footer sits at the bottom of short pages without a stray scroll. */}
+      <div className='flex min-h-[calc(100vh-3.5rem-1px)] flex-col md:pl-60'>
         {/* The desktop search trigger lives in the sidebar, which is hidden on
             mobile. A labelled bar beats an icon here: search is how mobile
             reaches Webhooks and every subroute the 4-item tab bar omits. */}
@@ -89,7 +94,7 @@ export default function DashboardLayout({
 
         <BreadcrumbNav />
         <NotificationTileStack />
-        <main id='main-content' tabIndex={-1}>
+        <main id='main-content' tabIndex={-1} className='flex-1'>
           {children}
         </main>
         {/* Inside the sidebar-offset column so the fixed sidebar cannot paint

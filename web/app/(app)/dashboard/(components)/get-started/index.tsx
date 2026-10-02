@@ -109,18 +109,20 @@ export default function GetStartedCard() {
                 Send a message
               </Link>
             </Button>
-            <Button variant='outline' size='sm' asChild>
-              <Link
-                href={ExternalLinks.discord}
-                prefetch={false}
-                target='_blank'
-                rel='noopener noreferrer'
-                onClick={markDiscordJoined}
-              >
-                <MessageSquare className='h-4 w-4' />
-                Join the community
-              </Link>
-            </Button>
+            {ExternalLinks.discord ? (
+              <Button variant='outline' size='sm' asChild>
+                <Link
+                  href={ExternalLinks.discord}
+                  prefetch={false}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  onClick={markDiscordJoined}
+                >
+                  <MessageSquare className='h-4 w-4' />
+                  Join the community
+                </Link>
+              </Button>
+            ) : null}
             <Button variant='ghost' size='sm' onClick={dismissCelebration}>
               Dismiss
             </Button>

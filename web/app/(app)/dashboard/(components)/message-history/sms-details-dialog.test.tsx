@@ -14,14 +14,14 @@ const failed = (errorCode: string) => ({
 })
 
 describe('SmsDetailsDialog failure help', () => {
-  it('links the permission guide for PERMISSION_DENIED', () => {
+  it('explains a permission failure without a guide when none is configured', () => {
     render(
       <SmsDetailsDialog message={failed('PERMISSION_DENIED')} open onOpenChange={() => {}} />,
       { wrapper: TestProviders }
     )
 
-    const link = screen.getByRole('link', { name: /how to fix it/i })
-    expect(link.getAttribute('href')).toContain('utm_source=message_details')
+    expect(screen.getByText(/does not have SMS permission/)).toBeTruthy()
+    expect(screen.queryByRole('link', { name: /how to fix it/i })).toBeNull()
   })
 
   it('shows no permission help for other failures', () => {

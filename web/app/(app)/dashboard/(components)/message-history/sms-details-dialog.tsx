@@ -64,6 +64,7 @@ export default function SmsDetailsDialog({
   const composerDeviceId = message.device?._id || fallbackDeviceId
   const deviceSource = device ?? message.device
   const deviceName = deviceSource ? formatDeviceName(deviceSource) : ''
+  const permissionGuide = smsPermissionGuideUrl('message_details')
 
   return (
     <>
@@ -176,15 +177,20 @@ export default function SmsDetailsDialog({
               )}
               {message.errorCode === 'PERMISSION_DENIED' && (
                 <p className='text-xs text-foreground'>
-                  The textbee app on this phone does not have SMS permission.{' '}
-                  <a
-                    href={smsPermissionGuideUrl('message_details')}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='font-medium underline underline-offset-2'
-                  >
-                    How to fix it
-                  </a>
+                  The textbee app on this phone does not have SMS permission.
+                  {permissionGuide ? (
+                    <>
+                      {' '}
+                      <a
+                        href={permissionGuide}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='font-medium underline underline-offset-2'
+                      >
+                        How to fix it
+                      </a>
+                    </>
+                  ) : null}
                 </p>
               )}
             </div>

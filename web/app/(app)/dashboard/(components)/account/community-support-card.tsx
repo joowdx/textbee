@@ -14,6 +14,8 @@ import { ExternalLinks } from '@/config/external-links'
 import Link from 'next/link'
 
 export default function CommunitySupportCard() {
+  if (!ExternalLinks.discord) return null
+
   return (
     <Card>
       <CardHeader>

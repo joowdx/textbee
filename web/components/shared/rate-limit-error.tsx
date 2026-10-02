@@ -9,6 +9,7 @@ import { checkoutPath } from '@/lib/plans'
 import { ExternalLinks } from '@/config/external-links'
 
 function DiscordHelpLine() {
+  if (!ExternalLinks.discord) return null
   return (
     <p className="text-xs text-muted-foreground">
       Questions about limits? Ask the{' '}

@@ -155,20 +155,22 @@ export default function UpgradeToProAlert() {
               </Link>
             </Button>
             {/* The dashboard has no pricing route; /#pricing was its own root. */}
-            <Button
-              variant='outline'
-              size='sm'
-              asChild
-              className='text-xs md:text-sm'
-            >
-              <Link
-                href={`${Routes.landingPage}/pricing`}
-                target='_blank'
-                rel='noopener noreferrer'
+            {Routes.pricing ? (
+              <Button
+                variant='outline'
+                size='sm'
+                asChild
+                className='text-xs md:text-sm'
               >
-                Learn More
-              </Link>
-            </Button>
+                <Link
+                  href={Routes.pricing}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  Learn More
+                </Link>
+              </Button>
+            ) : null}
           </div>
         </AlertDescription>
       </Alert>
@@ -198,7 +200,7 @@ export default function UpgradeToProAlert() {
             <Link href={checkoutPath('pro')}>{alertConfig.buttonText}</Link>
           </Button>
           {/* The dashboard has no pricing route; /#pricing was its own root. */}
-          {alertConfig.urgency === 'normal' && (
+          {alertConfig.urgency === 'normal' && Routes.pricing ? (
             <Button
               variant='outline'
               size='sm'
@@ -206,14 +208,14 @@ export default function UpgradeToProAlert() {
               className='text-xs md:text-sm'
             >
               <Link
-                href={`${Routes.landingPage}/pricing`}
+                href={Routes.pricing}
                 target='_blank'
                 rel='noopener noreferrer'
               >
                 Learn More
               </Link>
             </Button>
-          )}
+          ) : null}
         </div>
       </AlertDescription>
     </Alert>

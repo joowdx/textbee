@@ -86,15 +86,17 @@ function PlanCard({
               <span className='text-sm text-muted-foreground'>/month</span>
             </div>
           ) : (
-            <a
-              href={`${Routes.landingPage}/pricing`}
-              target='_blank'
-              rel='noreferrer'
-              className='inline-flex items-center text-sm font-medium text-primary underline-offset-4 hover:underline'
-            >
-              See pricing
-              <ExternalLink className='ml-1 h-3 w-3' aria-hidden />
-            </a>
+            Routes.pricing ? (
+              <a
+                href={Routes.pricing}
+                target='_blank'
+                rel='noreferrer'
+                className='inline-flex items-center text-sm font-medium text-primary underline-offset-4 hover:underline'
+              >
+                See pricing
+                <ExternalLink className='ml-1 h-3 w-3' aria-hidden />
+              </a>
+            ) : null
           )}
           {caption && (
             <CardDescription className='mt-1 tabular-nums'>
@@ -212,21 +214,23 @@ export default function PlanPicker({
       </div>
 
       <div className='flex flex-wrap items-center gap-4'>
-        <Button
-          variant='link'
-          size='sm'
-          className='h-auto px-0 text-xs text-muted-foreground'
-          asChild
-        >
-          <a
-            href={`${Routes.landingPage}/pricing`}
-            target='_blank'
-            rel='noreferrer'
+        {Routes.pricing ? (
+          <Button
+            variant='link'
+            size='sm'
+            className='h-auto px-0 text-xs text-muted-foreground'
+            asChild
           >
-            Compare all plans
-            <ExternalLink className='ml-1 h-3 w-3' />
-          </a>
-        </Button>
+            <a
+              href={Routes.pricing}
+              target='_blank'
+              rel='noreferrer'
+            >
+              Compare all plans
+              <ExternalLink className='ml-1 h-3 w-3' />
+            </a>
+          </Button>
+        ) : null}
         {/* Skipping a step that is already settled would mean nothing. */}
         {!isDone && (
           <Button

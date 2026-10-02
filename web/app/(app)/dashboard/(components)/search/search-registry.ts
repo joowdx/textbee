@@ -41,7 +41,7 @@ export type SearchEntry = {
   external?: boolean
 }
 
-export const searchEntries: SearchEntry[] = [
+const allSearchEntries: SearchEntry[] = [
   {
     href: '/dashboard',
     label: 'Dashboard',
@@ -348,6 +348,8 @@ export const searchEntries: SearchEntry[] = [
     ],
   },
 ]
+
+export const searchEntries = allSearchEntries.filter((entry) => entry.href)
 
 // Rendering order for the palette's group headings.
 export const searchGroupOrder: SearchGroup[] = [

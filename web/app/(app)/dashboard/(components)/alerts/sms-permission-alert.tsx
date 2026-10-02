@@ -15,6 +15,7 @@ export default function SmsPermissionAlert() {
   }
 
   const phone = status.deviceName ? ` on ${status.deviceName}` : ''
+  const guideUrl = smsPermissionGuideUrl('dashboard')
 
   return (
     <Alert className='border-destructive/30 bg-destructive/5 text-foreground'>
@@ -30,16 +31,18 @@ export default function SmsPermissionAlert() {
           </span>
         </span>
         <div className='w-full sm:w-auto mt-2 sm:mt-0 flex flex-wrap justify-center sm:justify-end gap-2'>
-          <Button variant='default' size='sm' asChild>
-            <Link
-              href={smsPermissionGuideUrl('dashboard')}
-              target='_blank'
-              rel='noopener noreferrer'
-            >
-              <BookOpen className='mr-2 h-4 w-4' />
-              Show me how
-            </Link>
-          </Button>
+          {guideUrl ? (
+            <Button variant='default' size='sm' asChild>
+              <Link
+                href={guideUrl}
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                <BookOpen className='mr-2 h-4 w-4' />
+                Show me how
+              </Link>
+            </Button>
+          ) : null}
           <Button variant='outline' size='sm' asChild>
             <Link href='/dashboard/messaging/history'>View messages</Link>
           </Button>
