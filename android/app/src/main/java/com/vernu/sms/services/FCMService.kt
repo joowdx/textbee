@@ -16,7 +16,7 @@ import com.vernu.sms.ApiManager
 import com.vernu.sms.AppConstants
 import com.vernu.sms.R
 import com.vernu.sms.TextbeeUtils
-import com.vernu.sms.activities.MainActivity
+import com.vernu.sms.ui.splash.SplashActivity
 import com.vernu.sms.dtos.RegisterDeviceInputDTO
 import com.vernu.sms.dtos.RegisterDeviceResponseDTO
 import com.vernu.sms.helpers.DeviceLog
@@ -152,7 +152,7 @@ class FCMService : FirebaseMessagingService() {
     }
 
     private fun sendNotification(title: String, messageBody: String) {
-        val intent = Intent(this, MainActivity::class.java).apply {
+        val intent = Intent(this, SplashActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
         val pendingIntent = PendingIntent.getActivity(

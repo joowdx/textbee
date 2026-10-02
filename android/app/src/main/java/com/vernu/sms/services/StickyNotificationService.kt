@@ -10,7 +10,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.vernu.sms.AppConstants
 import com.vernu.sms.R
-import com.vernu.sms.activities.MainActivity
+import com.vernu.sms.ui.splash.SplashActivity
 import com.vernu.sms.helpers.SharedPreferenceHelper
 
 class StickyNotificationService : Service() {
@@ -76,7 +76,7 @@ class StickyNotificationService : Service() {
 
             val pendingIntent = PendingIntent.getActivity(
                 this, 0,
-                Intent(this, MainActivity::class.java),
+                Intent(this, SplashActivity::class.java),
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
 
