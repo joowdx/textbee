@@ -162,6 +162,7 @@ object HeartbeatHelper {
                 DeviceConfig.save(context, body.config)
                 Log.d(TAG, "Heartbeat sent successfully")
                 DeviceLog.log(context, "heartbeat_ok", "pending ${body.pendingCount}")
+                ReleaseChecker.checkDaily(context)
                 UpdateNotifier.maybeNotify(context)
                 if (body.pendingCount > 0) RecoveryPoll.run(context, "heartbeat")
                 true

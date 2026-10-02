@@ -1,7 +1,6 @@
 package com.vernu.sms.ui.settings
 
-import android.content.Intent
-import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -24,7 +23,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.vernu.sms.BuildConfig
+import com.vernu.sms.Links
+import com.vernu.sms.helpers.ReleaseChecker
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,6 +39,8 @@ fun SettingsScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var checkingForUpdates by remember { mutableStateOf(false) }
     val clipboard = LocalClipboardManager.current
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -230,7 +235,7 @@ fun SettingsScreen(
             SettingsRow(
                 icon = Icons.Default.AutoAwesome,
                 title = "About",
-                subtitle = "textbee.dev",
+                subtitle = Links.webHost,
                 onClick = { showAboutDialog = true },
                 trailing = {
                     Icon(Icons.Default.ChevronRight, contentDescription = null,
@@ -241,10 +246,27 @@ fun SettingsScreen(
             SettingsRow(
                 icon = Icons.Default.SystemUpdate,
                 title = "Check for Updates",
+                subtitle = if (checkingForUpdates) "Checking…" else null,
                 onClick = {
-                    val versionInfo = "${BuildConfig.VERSION_NAME}(${BuildConfig.VERSION_CODE})"
-                    val url = "https://textbee.dev/download?currentVersion=${Uri.encode(versionInfo)}"
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                    if (!checkingForUpdates) {
+                        checkingForUpdates = true
+                        scope.launch {
+                            val release = withContext(Dispatchers.IO) { ReleaseChecker.fetch() }
+                            checkingForUpdates = false
+                            when {
+                                release == null -> {
+                                    Toast.makeText(context, "Could not check. Opening the releases page.", Toast.LENGTH_SHORT).show()
+                                    Links.open(context, Links.releases)
+                                }
+                                ReleaseChecker.isNewer(release) -> {
+                                    ReleaseChecker.remember(context, release)
+                                    Toast.makeText(context, "Downloading ${release.versionName}", Toast.LENGTH_SHORT).show()
+                                    Links.open(context, release.downloadUrl)
+                                }
+                                else -> Toast.makeText(context, "You're on the latest version", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
                 },
                 trailing = {
                     Icon(Icons.Default.OpenInBrowser, contentDescription = null,
@@ -252,79 +274,70 @@ fun SettingsScreen(
                 }
             )
 
-            SettingsSectionHeader("Community")
+            if (Links.support.isNotEmpty() || Links.community.isNotEmpty()) {
+                SettingsSectionHeader("Community")
+            }
 
-            SettingsRow(
-                icon = Icons.Default.SupportAgent,
-                title = "Get Support",
-                onClick = {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://app.textbee.dev/dashboard/account/get-support")))
-                },
-                trailing = {
-                    Icon(Icons.Default.OpenInBrowser, contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
-                }
-            )
+            if (Links.support.isNotEmpty()) {
+                SettingsRow(
+                    icon = Icons.Default.SupportAgent,
+                    title = "Get Support",
+                    onClick = {
+                        Links.open(context, Links.support)
+                    },
+                    trailing = {
+                        Icon(Icons.Default.OpenInBrowser, contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
+                    }
+                )
+            }
 
-            SettingsRow(
-                icon = Icons.Default.Forum,
-                title = "Join our Discord",
-                subtitle = "Get help from the community",
-                onClick = {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://textbee.dev/discord")))
-                },
-                trailing = {
-                    Icon(Icons.Default.OpenInBrowser, contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
-                }
-            )
+            if (Links.community.isNotEmpty()) {
+                SettingsRow(
+                    icon = Icons.Default.Forum,
+                    title = "Join the community",
+                    subtitle = "Get help from the community",
+                    onClick = {
+                        Links.open(context, Links.community)
+                    },
+                    trailing = {
+                        Icon(Icons.Default.OpenInBrowser, contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
+                    }
+                )
+            }
 
-            SettingsRow(
-                icon = Icons.Default.Share,
-                title = "Share textbee",
-                subtitle = "Help spread the word",
-                onClick = {
-                    val shareText = "i've been using textbee.dev to send SMS via API from my own phone, " +
-                        "no Twilio or paid services needed. works great for automations, alerts, " +
-                        "notifications, or anything that needs programmatic SMS. open source and free to start\n\n" +
-                        "https://textbee.dev"
-                    context.startActivity(
-                        Intent.createChooser(
-                            Intent(Intent.ACTION_SEND).apply {
-                                type = "text/plain"
-                                putExtra(Intent.EXTRA_TEXT, shareText)
-                            },
-                            "Share textbee"
-                        )
-                    )
-                }
-            )
+            if (Links.terms.isNotEmpty() || Links.privacy.isNotEmpty()) {
+                SettingsSectionHeader("Legal")
+            }
 
-            SettingsSectionHeader("Legal")
+            if (Links.terms.isNotEmpty()) {
+                SettingsRow(
+                    icon = Icons.Default.Gavel,
+                    title = "Terms of Service",
+                    onClick = {
+                        Links.open(context, Links.terms)
+                    },
+                    trailing = {
+                        Icon(Icons.Default.OpenInBrowser, contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
+                    }
+                )
+            }
 
-            SettingsRow(
-                icon = Icons.Default.Gavel,
-                title = "Terms of Service",
-                onClick = {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://textbee.dev/terms-of-service")))
-                },
-                trailing = {
-                    Icon(Icons.Default.OpenInBrowser, contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
-                }
-            )
-
-            SettingsRow(
-                icon = Icons.Default.Policy,
-                title = "Privacy Policy",
-                onClick = {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://textbee.dev/privacy-policy")))
-                },
-                trailing = {
-                    Icon(Icons.Default.OpenInBrowser, contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
-                }
-            )
+            if (Links.privacy.isNotEmpty()) {
+                SettingsRow(
+                    icon = Icons.Default.Policy,
+                    title = "Privacy Policy",
+                    onClick = {
+                        Links.open(context, Links.privacy)
+                    },
+                    trailing = {
+                        Icon(Icons.Default.OpenInBrowser, contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
+                    }
+                )
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
         }
@@ -391,7 +404,7 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = { showAboutDialog = false },
             title = {
-                Text("textbee.dev", fontWeight = FontWeight.Bold)
+                Text("textbee", fontWeight = FontWeight.Bold)
             },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -404,14 +417,14 @@ fun SettingsScreen(
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedButton(
                             onClick = {
-                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://textbee.dev")))
+                                Links.open(context, Links.web)
                             }
                         ) {
-                            Text("textbee.dev")
+                            Text(Links.webHost)
                         }
                         OutlinedButton(
                             onClick = {
-                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/textbee/textbee")))
+                                Links.open(context, Links.repo)
                             }
                         ) {
                             Text("GitHub")

@@ -13,8 +13,8 @@ import com.vernu.sms.AppConstants
 import com.vernu.sms.BuildConfig
 import com.vernu.sms.R
 
-// One notification per newer release, only when the server has switched
-// it on. Tapping opens the download page with the installed version.
+// One notification per newer release on this build's GitHub repository
+// (see ReleaseChecker). Tapping opens the release's APK.
 object UpdateNotifier {
     private const val CHANNEL_ID = "app_updates"
     private const val NOTIFICATION_ID = 7392
@@ -22,17 +22,14 @@ object UpdateNotifier {
     fun shouldNotify(enabled: Boolean, latestCode: Int, installedCode: Int, lastNotifiedCode: Int): Boolean =
         enabled && latestCode > installedCode && latestCode != lastNotifiedCode
 
-    fun downloadUrl(): String {
-        val versionInfo = "${BuildConfig.VERSION_NAME}(${BuildConfig.VERSION_CODE})"
-        return "https://textbee.dev/download?currentVersion=${Uri.encode(versionInfo)}"
-    }
-
     fun maybeNotify(context: Context) {
-        val latest = DeviceConfig.latestVersionCode(context)
+        val release = ReleaseChecker.latest(context) ?: return
+        val latest = release.rank
+        val installed = ReleaseChecker.rank(BuildConfig.VERSION_NAME) ?: return
         val lastNotified = SharedPreferenceHelper.getSharedPreferenceInt(
             context, AppConstants.SHARED_PREFS_LAST_UPDATE_NOTIFIED_VERSION_CODE_KEY, 0
         )
-        if (!shouldNotify(DeviceConfig.updateNotificationsEnabled(context), latest, BuildConfig.VERSION_CODE, lastNotified)) return
+        if (!shouldNotify(true, latest, installed, lastNotified)) return
         if (!DeviceHealth.evaluate(context).hasPostNotificationsPermission) return
 
         val manager = context.getSystemService(NotificationManager::class.java) ?: return
@@ -48,10 +45,10 @@ object UpdateNotifier {
         if (blocked) return
 
         val open = PendingIntent.getActivity(
-            context, 0, Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl())),
+            context, 0, Intent(Intent.ACTION_VIEW, Uri.parse(release.downloadUrl)),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val versionName = DeviceConfig.latestVersionName(context) ?: "a newer version"
+        val versionName = release.versionName
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle("textbee $versionName is available")
