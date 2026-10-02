@@ -100,6 +100,13 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion '1.4.8'
     }
+
+    // Netty, under the MQTT client, ships the same metadata files in each jar
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/INDEX.LIST', 'META-INF/io.netty.versions.properties']
+        }
+    }
 }
 
 dependencies {
@@ -126,6 +133,10 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
     
+    // MQTT 5 over WebSockets: the live link to the server, with push as the fallback
+    implementation 'com.hivemq:hivemq-mqtt-client:1.3.17'
+    implementation platform('com.hivemq:hivemq-mqtt-client-websocket:1.3.17')
+
     implementation 'androidx.work:work-runtime:2.7.1'
     implementation 'androidx.concurrent:concurrent-futures:1.1.0'
 

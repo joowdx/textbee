@@ -12,6 +12,7 @@ import com.vernu.sms.AppConstants
 import com.vernu.sms.R
 import com.vernu.sms.ui.splash.SplashActivity
 import com.vernu.sms.helpers.SharedPreferenceHelper
+import com.vernu.sms.mqtt.MqttClientManager
 
 class StickyNotificationService : Service() {
     companion object {
@@ -28,36 +29,49 @@ class StickyNotificationService : Service() {
     override fun onCreate() {
         super.onCreate()
         Log.i(TAG, "Service Started")
+    }
+
+    // Runs on every start request, so a change to the sticky setting or to
+    // mqttEnabled takes effect without restarting the service
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.i(TAG, "Received start id $startId: $intent")
 
         val stickyNotificationEnabled = SharedPreferenceHelper.getSharedPreferenceBoolean(
             applicationContext, AppConstants.SHARED_PREFS_STICKY_NOTIFICATION_ENABLED_KEY, false
         )
+        val mqttWanted = MqttClientManager.wanted(applicationContext)
 
-        if (stickyNotificationEnabled) {
-            val notification = createNotification()
-            try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING)
-                } else {
-                    startForeground(NOTIFICATION_ID, notification)
-                }
-                Log.i(TAG, "Started foreground service with sticky notification")
-            } catch (e: Exception) {
-                // ForegroundServiceStartNotAllowedException on API 31+ when app is in background
-                Log.w(TAG, "Cannot start foreground service (likely background restriction): ${e.message}")
-                stopSelf()
-            }
-        } else {
-            Log.i(TAG, "Sticky notification disabled by user preference")
+        if (!stickyNotificationEnabled && !mqttWanted) {
+            Log.i(TAG, "Sticky notification and MQTT are both off, stopping")
+            MqttClientManager.stop()
+            stopSelf()
+            return START_NOT_STICKY
         }
-    }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.i(TAG, "Received start id $startId: $intent")
+        // The MQTT connection needs the foreground service to stay alive, so
+        // the notification shows while it runs even with sticky turned off
+        val notification = createNotification()
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING)
+            } else {
+                startForeground(NOTIFICATION_ID, notification)
+            }
+            Log.i(TAG, "Started foreground service with sticky notification")
+        } catch (e: Exception) {
+            // ForegroundServiceStartNotAllowedException on API 31+ when app is in background
+            Log.w(TAG, "Cannot start foreground service (likely background restriction): ${e.message}")
+            MqttClientManager.stop()
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
+        if (mqttWanted) MqttClientManager.start(applicationContext) else MqttClientManager.stop()
         return START_STICKY
     }
 
     override fun onDestroy() {
+        MqttClientManager.stop()
         super.onDestroy()
         Log.i(TAG, "StickyNotificationService destroyed")
     }

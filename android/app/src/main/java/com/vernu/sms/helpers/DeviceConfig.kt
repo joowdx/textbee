@@ -3,6 +3,7 @@ package com.vernu.sms.helpers
 import android.content.Context
 import com.vernu.sms.AppConstants
 import com.vernu.sms.dtos.DeviceConfigDTO
+import com.vernu.sms.mqtt.MqttClientManager
 
 // Settings the server sends on every heartbeat. Until the first reply arrives
 // every switch reads as off, so a fresh install behaves like the old app.
@@ -34,6 +35,13 @@ object DeviceConfig {
                 context, AppConstants.SHARED_PREFS_CONFIG_LATEST_VERSION_NAME_KEY, it
             )
         }
+        config.mqttEnabled?.let {
+            val changed = it != mqttEnabled(context)
+            SharedPreferenceHelper.setSharedPreferenceBoolean(
+                context, AppConstants.SHARED_PREFS_CONFIG_MQTT_ENABLED_KEY, it
+            )
+            MqttClientManager.syncService(context, changed)
+        }
     }
 
     fun sendSchedulerV2Enabled(context: Context): Boolean =
@@ -54,6 +62,11 @@ object DeviceConfig {
     fun latestVersionCode(context: Context): Int =
         SharedPreferenceHelper.getSharedPreferenceInt(
             context, AppConstants.SHARED_PREFS_CONFIG_LATEST_VERSION_CODE_KEY, 0
+        )
+
+    fun mqttEnabled(context: Context): Boolean =
+        SharedPreferenceHelper.getSharedPreferenceBoolean(
+            context, AppConstants.SHARED_PREFS_CONFIG_MQTT_ENABLED_KEY, false
         )
 
     fun latestVersionName(context: Context): String? =

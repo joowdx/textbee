@@ -15,6 +15,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
+import com.vernu.sms.mqtt.MqttClientManager;
 import com.vernu.sms.services.StickyNotificationService;
 import com.vernu.sms.helpers.SharedPreferenceHelper;
 import com.vernu.sms.dtos.SimInfoDTO;
@@ -42,19 +43,22 @@ public class TextbeeUtils {
 
     }
 
+    // Starts the gateway service when the sticky notification is on or the
+    // MQTT connection should run. Starting it again re-reads both settings.
     public static void startStickyNotificationService(Context context) {
-        if(!isPermissionGranted(context, Manifest.permission.RECEIVE_SMS)){
+        boolean mqttWanted = MqttClientManager.wanted(context);
+        if (!mqttWanted && !isPermissionGranted(context, Manifest.permission.RECEIVE_SMS)) {
             return;
         }
-        
+
         // Only start service if user has enabled sticky notification
         boolean stickyNotificationEnabled = SharedPreferenceHelper.getSharedPreferenceBoolean(
                 context,
                 AppConstants.SHARED_PREFS_STICKY_NOTIFICATION_ENABLED_KEY,
                 false
         );
-        
-        if (stickyNotificationEnabled) {
+
+        if (stickyNotificationEnabled || mqttWanted) {
             Intent notificationIntent = new Intent(context, StickyNotificationService.class);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(notificationIntent);
@@ -68,6 +72,11 @@ public class TextbeeUtils {
     }
 
     public static void stopStickyNotificationService(Context context) {
+        // MQTT still needs the service; the start request drops only the parts now off
+        if (MqttClientManager.wanted(context)) {
+            startStickyNotificationService(context);
+            return;
+        }
         Intent notificationIntent = new Intent(context, StickyNotificationService.class);
         context.stopService(notificationIntent);
         Log.i(TAG, "Stopping sticky notification service");

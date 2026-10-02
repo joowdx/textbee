@@ -1,5 +1,6 @@
 package com.vernu.sms.helpers
 
+import com.vernu.sms.mqtt.MqttConnectionState
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -97,5 +98,15 @@ class DeviceHealthRowsTest {
         assertEquals("1 minute", DeviceHealthRows.formatDuration(60_000))
         assertEquals("1 hour 30 min", DeviceHealthRows.formatDuration(90 * 60_000))
         assertEquals("2 hours", DeviceHealthRows.formatDuration(120 * 60_000))
+    }
+
+    @Test
+    fun mqttRowFollowsTheConnection() {
+        assertEquals(HealthStatus.GREEN, DeviceHealthRows.mqttRow(MqttConnectionState.CONNECTED, true).status)
+        assertEquals(false, DeviceHealthRows.mqttRow(MqttConnectionState.OFF, false).countsAsIssue)
+        assertEquals(false, DeviceHealthRows.mqttRow(MqttConnectionState.CONNECTING, true).countsAsIssue)
+        val stopped = DeviceHealthRows.mqttRow(MqttConnectionState.OFF, true)
+        assertEquals(HealthStatus.AMBER, stopped.status)
+        assertEquals(true, stopped.countsAsIssue)
     }
 }

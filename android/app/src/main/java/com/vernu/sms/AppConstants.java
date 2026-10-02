@@ -41,6 +41,13 @@ public class AppConstants {
     public static final String SHARED_PREFS_CONFIG_UPDATE_NOTIFICATIONS_KEY = "CONFIG_UPDATE_NOTIFICATIONS_ENABLED";
     public static final String SHARED_PREFS_CONFIG_LATEST_VERSION_CODE_KEY = "CONFIG_LATEST_VERSION_CODE";
     public static final String SHARED_PREFS_CONFIG_LATEST_VERSION_NAME_KEY = "CONFIG_LATEST_VERSION_NAME";
+    public static final String SHARED_PREFS_CONFIG_MQTT_ENABLED_KEY = "CONFIG_MQTT_ENABLED";
+
+    // MQTT credentials from POST gateway/devices/{id}/mqtt-credentials
+    public static final String SHARED_PREFS_MQTT_URL_KEY = "MQTT_URL";
+    public static final String SHARED_PREFS_MQTT_USERNAME_KEY = "MQTT_USERNAME";
+    public static final String SHARED_PREFS_MQTT_PASSWORD_KEY = "MQTT_PASSWORD";
+    public static final String SHARED_PREFS_MQTT_TOPIC_PREFIX_KEY = "MQTT_TOPIC_PREFIX";
 
     // Send pacing without sleeping inside a worker
     public static final String SHARED_PREFS_NEXT_SEND_SLOT_MS_KEY = "NEXT_SEND_SLOT_MS";

@@ -65,6 +65,24 @@ fun DeviceHealthScreen(
         )
     }
 
+    // Asks directly for the exemption; falls back to the settings list on
+    // devices that do not offer the prompt
+    fun requestBatteryExemption() {
+        try {
+            context.startActivity(
+                Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                    data = Uri.parse("package:${context.packageName}")
+                }
+            )
+        } catch (e: Exception) {
+            try {
+                context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+            } catch (e: Exception) {
+                openAppSettings()
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -105,11 +123,7 @@ fun DeviceHealthScreen(
                             HealthAction.GRANT_NOTIFICATIONS -> if (permissionDenied) openAppSettings() else permissionLauncher.launch(
                                 arrayOf("android.permission.POST_NOTIFICATIONS")
                             )
-                            HealthAction.OPEN_BATTERY_SETTINGS -> try {
-                                context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
-                            } catch (e: Exception) {
-                                openAppSettings()
-                            }
+                            HealthAction.OPEN_BATTERY_SETTINGS -> requestBatteryExemption()
                             HealthAction.TOGGLE_STICKY -> viewModel.setStickyNotification(true)
                             HealthAction.OPEN_APP_SETTINGS -> openAppSettings()
                             HealthAction.SEND_HEARTBEAT -> viewModel.sendHeartbeatNow()

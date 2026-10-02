@@ -7,6 +7,9 @@ import com.google.gson.Gson
 import com.vernu.sms.ApiManager
 import com.vernu.sms.dtos.SMSDTO
 import com.vernu.sms.helpers.DeviceLog
+import com.vernu.sms.mqtt.MqttClientManager
+import com.vernu.sms.mqtt.MqttTopics
+import com.vernu.sms.mqtt.Uplink
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -63,6 +66,14 @@ class SMSReceivedWorker(context: Context, workerParams: WorkerParameters) : Work
         }
 
         val smsDTO = Gson().fromJson(smsDtoJson, SMSDTO::class.java)
+
+        // Same body as the HTTP call; HTTP is the fallback when not connected
+        // or when the broker does not acknowledge in time
+        if (Uplink.overMqtt(MqttClientManager, MqttTopics.UP_RECEIVED, Gson().toJson(smsDTO))) {
+            Log.d(TAG, "Reported over MQTT - ID: ${smsDTO.smsId}")
+            DeviceLog.log(applicationContext, "sms_forwarded", "from ${smsDTO.sender}, mqtt")
+            return Result.success()
+        }
 
         return try {
             val response = ApiManager.getApiService().sendReceivedSMS(deviceId, apiKey, smsDTO).execute()

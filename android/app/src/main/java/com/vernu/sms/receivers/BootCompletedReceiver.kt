@@ -14,6 +14,7 @@ import com.vernu.sms.dtos.RegisterDeviceInputDTO
 import com.vernu.sms.dtos.RegisterDeviceResponseDTO
 import com.vernu.sms.helpers.HeartbeatManager
 import com.vernu.sms.helpers.SharedPreferenceHelper
+import com.vernu.sms.mqtt.MqttClientManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,8 +30,9 @@ class BootCompletedReceiver : BroadcastReceiver() {
         val stickyNotificationEnabled = SharedPreferenceHelper.getSharedPreferenceBoolean(
             context, AppConstants.SHARED_PREFS_STICKY_NOTIFICATION_ENABLED_KEY, false
         )
-        if (stickyNotificationEnabled && TextbeeUtils.isPermissionGranted(context, Manifest.permission.RECEIVE_SMS)) {
-            Log.i(TAG, "Device booted, starting sticky notification service")
+        val mqttWanted = MqttClientManager.wanted(context)
+        if (mqttWanted || (stickyNotificationEnabled && TextbeeUtils.isPermissionGranted(context, Manifest.permission.RECEIVE_SMS))) {
+            Log.i(TAG, "Device booted, starting sticky notification service (mqtt: $mqttWanted)")
             TextbeeUtils.startStickyNotificationService(context)
         }
 

@@ -11,20 +11,14 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.google.gson.Gson
 import com.vernu.sms.ApiManager
 import com.vernu.sms.AppConstants
 import com.vernu.sms.R
-import com.vernu.sms.TextbeeUtils
 import com.vernu.sms.ui.splash.SplashActivity
 import com.vernu.sms.dtos.RegisterDeviceInputDTO
 import com.vernu.sms.dtos.RegisterDeviceResponseDTO
 import com.vernu.sms.helpers.DeviceLog
-import com.vernu.sms.helpers.HeartbeatHelper
-import com.vernu.sms.helpers.HeartbeatManager
 import com.vernu.sms.helpers.SharedPreferenceHelper
-import com.vernu.sms.models.SMSPayload
-import com.vernu.sms.workers.SmsSendWorker
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -37,77 +31,7 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.d(TAG, remoteMessage.data.toString())
-        val pushReceivedAt = System.currentTimeMillis()
-
-        try {
-            val messageType = remoteMessage.data["type"]
-            if (messageType == "heartbeat_check") {
-                DeviceLog.log(this, "push_received", "heartbeat check")
-                handleHeartbeatCheck()
-                return
-            }
-
-            val smsPayload = Gson().fromJson(remoteMessage.data["smsData"], SMSPayload::class.java)
-
-            if (remoteMessage.data.isNotEmpty()) {
-                sendSMS(smsPayload, pushReceivedAt)
-            }
-        } catch (e: Exception) {
-            TextbeeUtils.logException(e, "Error processing FCM message")
-        }
-    }
-
-    private fun handleHeartbeatCheck() {
-        Log.d(TAG, "Received heartbeat check request from backend")
-
-        if (!HeartbeatHelper.isDeviceEligibleForHeartbeat(this)) {
-            Log.d(TAG, "Device not eligible for heartbeat, skipping heartbeat check")
-            return
-        }
-
-        val deviceId = SharedPreferenceHelper.getSharedPreferenceString(
-            this, AppConstants.SHARED_PREFS_DEVICE_ID_KEY, ""
-        ) ?: ""
-        val apiKey = SharedPreferenceHelper.getSharedPreferenceString(
-            this, AppConstants.SHARED_PREFS_API_KEY_KEY, ""
-        ) ?: ""
-
-        val success = HeartbeatHelper.sendHeartbeat(this, deviceId, apiKey)
-        if (success) {
-            Log.d(TAG, "Heartbeat sent successfully in response to backend check")
-        } else {
-            Log.e(TAG, "Failed to send heartbeat in response to backend check")
-        }
-        HeartbeatManager.scheduleHeartbeat(this)
-    }
-
-    private fun sendSMS(smsPayload: SMSPayload?, pushReceivedAt: Long) {
-        if (smsPayload == null) {
-            Log.e(TAG, "SMS payload is null")
-            return
-        }
-
-        val recipients = smsPayload.recipients
-        if (recipients == null || recipients.isEmpty()) {
-            Log.e(TAG, "No recipients found in SMS payload")
-            return
-        }
-        if (smsPayload.smsId.isNullOrEmpty() || smsPayload.message == null) {
-            Log.e(TAG, "SMS payload is missing its id or message")
-            DeviceLog.log(this, "push_invalid", "missing id or message")
-            return
-        }
-        DeviceLog.log(this, "push_received", "${recipients.size} recipient(s)", smsPayload.smsId)
-
-        for (recipient in recipients) {
-            SmsSendWorker.enqueue(
-                this, recipient, smsPayload.message ?: "",
-                smsPayload.smsId, smsPayload.smsBatchId, smsPayload.simSubscriptionId,
-                pushReceivedAt
-            )
-        }
-
-        Log.d(TAG, "Enqueued ${recipients.size} SMS for sending - Batch: ${smsPayload.smsBatchId}")
+        SmsCommandHandler.handle(this, remoteMessage.data, SmsCommandHandler.SOURCE_PUSH)
     }
 
     override fun onNewToken(token: String) {

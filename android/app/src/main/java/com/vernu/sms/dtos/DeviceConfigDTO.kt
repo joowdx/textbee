@@ -6,4 +6,5 @@ class DeviceConfigDTO {
     var updateNotificationsEnabled: Boolean? = null
     var latestVersionCode: Int? = null
     var latestVersionName: String? = null
+    var mqttEnabled: Boolean? = null
 }

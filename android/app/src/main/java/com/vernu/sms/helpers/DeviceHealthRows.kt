@@ -1,5 +1,7 @@
 package com.vernu.sms.helpers
 
+import com.vernu.sms.mqtt.MqttConnectionState
+
 enum class HealthStatus { GREEN, AMBER, RED }
 
 enum class HealthAction { NONE, GRANT_SMS, GRANT_NOTIFICATIONS, OPEN_BATTERY_SETTINGS, TOGGLE_STICKY, OPEN_APP_SETTINGS, SEND_HEARTBEAT }
@@ -24,6 +26,8 @@ data class HealthInputs(
     val nowMs: Long,
     val manufacturer: String,
     val gatewayEnabled: Boolean,
+    val mqttState: MqttConnectionState = MqttConnectionState.OFF,
+    val mqttWanted: Boolean = false,
 )
 
 // The checks behind the Device health screen. Pure, so each row is testable.
@@ -59,7 +63,7 @@ object DeviceHealthRows {
             true -> HealthRow("battery", "Battery usage", "Unrestricted", HealthStatus.GREEN)
             false -> HealthRow("battery", "Battery usage",
                 "Android may pause textbee in the background and hold messages for minutes or hours. Set battery usage to Unrestricted.",
-                HealthStatus.AMBER, HealthAction.OPEN_BATTERY_SETTINGS, "Open settings")
+                HealthStatus.AMBER, HealthAction.OPEN_BATTERY_SETTINGS, "Allow")
             null -> HealthRow("battery", "Battery usage", "Could not read", HealthStatus.AMBER, countsAsIssue = false)
         }
 
@@ -89,6 +93,7 @@ object DeviceHealthRows {
 
         rows += sendDelayRow(i.sendDelaySeconds)
         rows += heartbeatRow(i.lastHeartbeatMs, i.nowMs, i.gatewayEnabled)
+        rows += mqttRow(i.mqttState, i.mqttWanted)
 
         oemTips(i.manufacturer)?.let { (brand, tips) ->
             rows += HealthRow("oem", "Tips for $brand phones", tips, HealthStatus.GREEN,
@@ -136,6 +141,21 @@ object DeviceHealthRows {
                 "$ago. Android or the phone maker is probably stopping the app in the background.",
                 HealthStatus.RED, send, "Send heartbeat")
         }
+    }
+
+    fun mqttRow(state: MqttConnectionState, wanted: Boolean): HealthRow = when {
+        state == MqttConnectionState.CONNECTED ->
+            HealthRow("mqtt", "Live connection", "Connected. Messages reach this device in seconds.", HealthStatus.GREEN)
+        !wanted ->
+            HealthRow("mqtt", "Live connection", "Off. Messages reach this device by push notification.",
+                HealthStatus.GREEN, countsAsIssue = false)
+        state == MqttConnectionState.CONNECTING ->
+            HealthRow("mqtt", "Live connection", "Connecting. Until it connects, messages come by push notification.",
+                HealthStatus.AMBER, countsAsIssue = false)
+        else ->
+            HealthRow("mqtt", "Live connection",
+                "Not running. Android may have stopped textbee in the background; messages come by push notification until it restarts.",
+                HealthStatus.AMBER)
     }
 
     fun formatDuration(ms: Long): String {

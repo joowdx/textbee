@@ -7,6 +7,9 @@ import com.google.gson.Gson
 import com.vernu.sms.ApiManager
 import com.vernu.sms.dtos.SMSDTO
 import com.vernu.sms.helpers.DeviceLog
+import com.vernu.sms.mqtt.MqttClientManager
+import com.vernu.sms.mqtt.MqttTopics
+import com.vernu.sms.mqtt.Uplink
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -58,6 +61,14 @@ class SMSStatusUpdateWorker(context: Context, workerParams: WorkerParameters) : 
 
         val smsDTO = Gson().fromJson(smsDtoJson, SMSDTO::class.java)
         smsDTO.reportAttempt = runAttemptCount + 1
+
+        // Same body as the HTTP call; HTTP is the fallback when not connected
+        // or when the broker does not acknowledge in time
+        if (Uplink.overMqtt(MqttClientManager, MqttTopics.UP_SMS_STATUS, Gson().toJson(smsDTO))) {
+            Log.d(TAG, "Reported over MQTT - ID: ${smsDTO.smsId}")
+            DeviceLog.log(applicationContext, "status_uploaded", "${smsDTO.status}, attempt ${smsDTO.reportAttempt}, mqtt", smsDTO.smsId)
+            return Result.success()
+        }
 
         return try {
             val response = ApiManager.getApiService().updateSMSStatus(deviceId, apiKey, smsDTO).execute()

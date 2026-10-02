@@ -14,6 +14,8 @@ import com.vernu.sms.helpers.HealthInputs
 import com.vernu.sms.helpers.HealthRow
 import com.vernu.sms.helpers.HeartbeatHelper
 import com.vernu.sms.helpers.SharedPreferenceHelper
+import com.vernu.sms.mqtt.MqttClientManager
+import com.vernu.sms.mqtt.MqttState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,6 +37,10 @@ class DeviceHealthViewModel(app: Application) : AndroidViewModel(app) {
 
     init {
         refresh()
+        // The live connection changes on its own, so its row follows it
+        viewModelScope.launch {
+            MqttState.state.collect { refresh() }
+        }
     }
 
     fun refresh() {
@@ -103,6 +109,8 @@ class DeviceHealthViewModel(app: Application) : AndroidViewModel(app) {
                 gatewayEnabled = SharedPreferenceHelper.getSharedPreferenceBoolean(
                     context, AppConstants.SHARED_PREFS_GATEWAY_ENABLED_KEY, false
                 ),
+                mqttState = MqttState.value,
+                mqttWanted = MqttClientManager.wanted(context),
             )
         }
 
