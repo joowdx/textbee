@@ -20,7 +20,9 @@
 #   NEXT_PUBLIC_TURNSTILE_SITE_KEY  optional
 #   NEXT_PUBLIC_GOOGLE_CLIENT_ID    optional
 #   APP_SUPPORT_URL, APP_COMMUNITY_URL, APP_DOCS_URL, APP_PRICING_URL, APP_TERMS_URL,
-#   APP_PRIVACY_URL                 optional links in the app; empty hides them
+#   APP_PRIVACY_URL                 optional links in the app and dashboard; empty hides them
+#   APP_REFUND_URL, APP_STATUS_URL, APP_SUPPORT_EMAIL, APP_SECURITY_EMAIL,
+#   APP_SMS_PERMISSION_GUIDE_URL    optional, dashboard only
 # Repository secrets:
 #   GOOGLE_SERVICES_JSON            google-services.json of the Firebase Android app
 #                                   registered for ANDROID_APPLICATION_ID
@@ -99,6 +101,16 @@ jobs:
                   SITE_URL: ${{ vars.SITE_URL }}
                   TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
                   GOOGLE_CLIENT_ID: ${{ vars.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
+                  NEXT_PUBLIC_DOCS_URL: ${{ vars.APP_DOCS_URL }}
+                  NEXT_PUBLIC_COMMUNITY_URL: ${{ vars.APP_COMMUNITY_URL }}
+                  NEXT_PUBLIC_PRICING_URL: ${{ vars.APP_PRICING_URL }}
+                  NEXT_PUBLIC_TERMS_URL: ${{ vars.APP_TERMS_URL }}
+                  NEXT_PUBLIC_PRIVACY_URL: ${{ vars.APP_PRIVACY_URL }}
+                  NEXT_PUBLIC_REFUND_URL: ${{ vars.APP_REFUND_URL }}
+                  NEXT_PUBLIC_STATUS_URL: ${{ vars.APP_STATUS_URL }}
+                  NEXT_PUBLIC_SUPPORT_EMAIL: ${{ vars.APP_SUPPORT_EMAIL }}
+                  NEXT_PUBLIC_SECURITY_EMAIL: ${{ vars.APP_SECURITY_EMAIL }}
+                  NEXT_PUBLIC_SMS_PERMISSION_GUIDE_URL: ${{ vars.APP_SMS_PERMISSION_GUIDE_URL }}
               run: |
                   test -n "$API_BASE_URL" || { echo "::error::Set the API_BASE_URL repository variable"; exit 1; }
                   test -n "$SITE_URL" || { echo "::error::Set the SITE_URL repository variable"; exit 1; }
@@ -107,6 +119,12 @@ jobs:
                       echo "NEXT_PUBLIC_SITE_URL=${SITE_URL%/}"
                       if [ -n "$TURNSTILE_SITE_KEY" ]; then echo "NEXT_PUBLIC_TURNSTILE_SITE_KEY=$TURNSTILE_SITE_KEY"; fi
                       if [ -n "$GOOGLE_CLIENT_ID" ]; then echo "NEXT_PUBLIC_GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID"; fi
+                      echo "NEXT_PUBLIC_RELEASES_REPO=$GITHUB_REPOSITORY"
+                      for name in DOCS_URL COMMUNITY_URL PRICING_URL TERMS_URL PRIVACY_URL REFUND_URL \
+                          STATUS_URL SUPPORT_EMAIL SECURITY_EMAIL SMS_PERMISSION_GUIDE_URL; do
+                          var="NEXT_PUBLIC_$name"
+                          if [ -n "${!var}" ]; then echo "$var=${!var}"; fi
+                      done
                   } > web/.env
 
             - name: Set up Docker Buildx
