@@ -30,6 +30,7 @@ import {
   EmailVerificationDocument,
 } from './schemas/email-verification.schema'
 import { appPublicUrl } from '../mail/email-links'
+import { assertMayCreateAccount, assertMaySignIn } from './allowed-emails'
 
 // Failed OTP submissions allowed against a single password reset record.
 const MAX_PASSWORD_RESET_ATTEMPTS = 5
@@ -69,6 +70,7 @@ export class AuthService {
     requestContext?: { ip?: string; userAgent?: string; country?: string },
   ) {
     await this.turnstileService.verify(userData.turnstileToken)
+    assertMaySignIn(userData.email)
 
     const user = await this.usersService.findOneWithPassword({
       email: userData.email,
@@ -151,6 +153,7 @@ export class AuthService {
     this.assertGoogleTokenIsForThisApp(response.data)
 
     const { sub: googleId, name, email, picture } = response.data
+    assertMaySignIn(email)
     let user = await this.usersService.findOne({ email })
 
     // The same button serves sign-in and sign-up, so attribution is sent every
@@ -158,6 +161,7 @@ export class AuthService {
     const isNewUser = !user
 
     if (!user) {
+      assertMayCreateAccount(email)
       user = await this.usersService.create({
         name,
         email,
@@ -209,6 +213,7 @@ export class AuthService {
     requestContext?: { ip?: string; userAgent?: string; country?: string },
   ) {
     await this.turnstileService.verify(userData.turnstileToken)
+    assertMayCreateAccount(userData.email)
 
     const existingUser = await this.usersService.findOne({
       email: userData.email,

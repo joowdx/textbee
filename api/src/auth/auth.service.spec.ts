@@ -80,6 +80,16 @@ const build = () => {
 }
 
 describe('AuthService', () => {
+  const ORIGINAL_ALLOWED_EMAILS = process.env.ALLOWED_EMAILS
+
+  beforeEach(() => {
+    delete process.env.ALLOWED_EMAILS
+  })
+
+  afterAll(() => {
+    process.env.ALLOWED_EMAILS = ORIGINAL_ALLOWED_EMAILS
+  })
+
   describe('validateEmail', () => {
     it('accepts a well-formed address', async () => {
       const { service } = build()
@@ -576,6 +586,7 @@ describe('AuthService', () => {
 
     it('creates the user when email and password are valid', async () => {
       const { service, usersService } = registerSetup()
+      process.env.ALLOWED_EMAILS = 'a@b.com'
 
       await service.register({
         name: 'Ada',
@@ -806,6 +817,128 @@ describe('AuthService', () => {
     })
   })
 
+  describe('allowed emails', () => {
+    const newAccount = {
+      name: 'Ada',
+      email: 'Ada@Example.com',
+      password: 'a-valid-password',
+      turnstileToken: 'token',
+    }
+
+    const stored = (email: string) => ({
+      _id: 'user_1',
+      email,
+      password: bcrypt.hashSync('correct-password', 4),
+      save: jest.fn().mockResolvedValue(undefined),
+      toObject: () => ({ _id: 'user_1', email }),
+    })
+
+    const stageGoogle = (email: string) =>
+      jest.spyOn(axios, 'get').mockResolvedValue({
+        data: { aud: 'ours', email, email_verified: 'true', sub: 'g1' },
+      } as any)
+
+    const ORIGINAL_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
+
+    beforeEach(() => {
+      process.env.GOOGLE_CLIENT_ID = 'ours'
+    })
+
+    afterEach(() => {
+      process.env.GOOGLE_CLIENT_ID = ORIGINAL_CLIENT_ID
+      jest.restoreAllMocks()
+    })
+
+    it('refuses every sign-up when no list is set', async () => {
+      const ctx = build()
+
+      await expect(ctx.service.register(newAccount)).rejects.toThrow(
+        HttpException,
+      )
+      expect(ctx.usersService.create).not.toHaveBeenCalled()
+    })
+
+    it('refuses a sign-up from an address not on the list', async () => {
+      process.env.ALLOWED_EMAILS = 'owner@example.com'
+      const ctx = build()
+
+      await expect(ctx.service.register(newAccount)).rejects.toThrow(
+        HttpException,
+      )
+      expect(ctx.usersService.create).not.toHaveBeenCalled()
+    })
+
+    it('refuses a new Google account not on the list', async () => {
+      process.env.ALLOWED_EMAILS = 'owner@example.com'
+      const ctx = build()
+      stageGoogle('ada@example.com')
+      ctx.usersService.findOne.mockResolvedValue(null)
+
+      await expect(ctx.service.loginWithGoogle('tok')).rejects.toThrow(
+        HttpException,
+      )
+      expect(ctx.usersService.create).not.toHaveBeenCalled()
+    })
+
+    it('refuses a Google sign-in for an existing account off the list', async () => {
+      process.env.ALLOWED_EMAILS = 'owner@example.com'
+      const ctx = build()
+      stageGoogle('ada@example.com')
+      ctx.usersService.findOne.mockResolvedValue(stored('ada@example.com'))
+
+      await expect(ctx.service.loginWithGoogle('tok')).rejects.toThrow(
+        HttpException,
+      )
+    })
+
+    it('refuses a password login off the list once a list is set', async () => {
+      process.env.ALLOWED_EMAILS = 'owner@example.com'
+      const ctx = build()
+      ctx.usersService.findOneWithPassword.mockResolvedValue(
+        stored('ada@example.com'),
+      )
+
+      await expect(
+        ctx.service.login({
+          email: 'ada@example.com',
+          password: 'correct-password',
+          turnstileToken: 'token',
+        }),
+      ).rejects.toThrow(HttpException)
+    })
+
+    it('lets a listed address log in whatever its case', async () => {
+      process.env.ALLOWED_EMAILS = ' OWNER@example.com , other@example.com'
+      const ctx = build()
+      ctx.usersService.findOneWithPassword.mockResolvedValue(
+        stored('owner@example.com'),
+      )
+
+      const result = await ctx.service.login({
+        email: 'Owner@Example.com',
+        password: 'correct-password',
+        turnstileToken: 'token',
+      })
+
+      expect(result.accessToken).toBe('signed-jwt')
+    })
+
+    it('keeps existing accounts signing in when no list is set', async () => {
+      const ctx = build()
+      ctx.usersService.findOneWithPassword.mockResolvedValue(
+        stored('ada@example.com'),
+      )
+
+      const result = await ctx.service.login({
+        email: 'ada@example.com',
+        password: 'correct-password',
+        turnstileToken: 'token',
+      })
+
+      expect(result.accessToken).toBe('signed-jwt')
+    })
+  })
+
   // tokeninfo only proves Google signed the token. Without these checks a token
   // minted for any other Google OAuth client would be accepted.
   describe('loginWithGoogle', () => {
@@ -904,6 +1037,7 @@ describe('AuthService', () => {
 
     it('leaves a new account to the client recorded at signup', async () => {
       const ctx = build()
+      process.env.ALLOWED_EMAILS = 'ada@example.com'
       stageTokenInfo({
         aud: OURS,
         email: 'ada@example.com',
