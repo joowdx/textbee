@@ -96,12 +96,6 @@ export default function AppHeader({
           <Button asChild variant='ghost' className='justify-start'>
             <Link href={Routes.login}>Log in</Link>
           </Button>
-          <Button
-            asChild
-            className='rounded-full bg-primary text-primary-foreground hover:bg-primary/90'
-          >
-            <Link href={Routes.register}>Get started</Link>
-          </Button>
         </nav>
       </SheetContent>
     </Sheet>
@@ -134,12 +128,6 @@ export default function AppHeader({
               <div className='hidden md:flex md:items-center md:gap-2'>
                 <Button asChild variant='ghost'>
                   <Link href={Routes.login}>Log in</Link>
-                </Button>
-                <Button
-                  asChild
-                  className='rounded-full bg-primary text-primary-foreground hover:bg-primary/90'
-                >
-                  <Link href={Routes.register}>Get started</Link>
                 </Button>
               </div>
               <SignedOutMobileMenu />

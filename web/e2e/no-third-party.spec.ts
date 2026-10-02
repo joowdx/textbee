@@ -20,7 +20,7 @@ const BLOCKED_HOSTS = [
   'cdn.supporthq.app',
 ]
 
-const PAGES = ['/login', '/register', '/download']
+const PAGES = ['/login', '/download']
 
 for (const path of PAGES) {
   test(`${path} loads no third-party analytics when unconfigured`, async ({

@@ -10,6 +10,13 @@ const nextConfig = {
         destination: '/dashboard',
         permanent: true,
       },
+      // Sign-ups are closed on this instance; the API refuses addresses not on
+      // ALLOWED_EMAILS, and the page sends people to sign in instead.
+      {
+        source: '/register',
+        destination: '/login',
+        permanent: false,
+      },
       {
         source: '/android',
         destination: 'https://dl.textbee.dev',
