@@ -20,6 +20,7 @@ import { WebhookQueueService } from './queue/webhook-queue.service'
 import { MailService } from '../mail/mail.service'
 import { firstName } from '../mail/first-name'
 import { UsersService } from '../users/users.service'
+import { appPublicUrl } from '../mail/email-links'
 
 /**
  * Endpoints can carry a token in the query or in userinfo, so the admin summary
@@ -947,7 +948,7 @@ export class WebhookService {
       deletedAt: null,
     })
 
-    const ctaUrlBase = process.env.FRONTEND_URL || 'https://app.textbee.dev'
+    const ctaUrlBase = appPublicUrl()
     const disabledInThisRun: {
       subscriptionId: string
       deliveryUrl: string

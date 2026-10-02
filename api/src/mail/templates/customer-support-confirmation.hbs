@@ -17,5 +17,7 @@
     While you wait, the community on Discord may already have an answer.
   </p>
 
-  {{> email-button ctaUrl='https://textbee.dev/discord' ctaLabel='Ask the community'}}
+  {{#if communityUrl}}
+  {{> email-button ctaUrl=communityUrl ctaLabel='Ask the community'}}
+  {{/if}}
 {{/email-layout}}

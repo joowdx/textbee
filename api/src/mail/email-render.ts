@@ -6,6 +6,7 @@
 // fixture, port the change here in the same pass, and copy all three files to every repo.
 // See email_render.py for the template body format.
 import { createHmac, timingSafeEqual } from 'crypto'
+import { logoUrl } from './email-links'
 
 const OPEN = '\u0001'
 const CLOSE = '\u0002'
@@ -419,8 +420,6 @@ export const verifyLink = (
 
 // ---------------- outer documents
 
-export const LOGO_URL = 'https://textbee.dev/images/logo.png'
-
 /** Branded notice: logo row, body, footer. Used by shell templates. */
 export const wrapShell = (
   subject: string,
@@ -437,7 +436,7 @@ export const wrapShell = (
   '<tr><td align="center" style="padding:24px 12px;">' +
   '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:8px;">' +
   '<tr><td style="padding:24px 28px 0 28px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#111827;">' +
-  `<img src="${LOGO_URL}" alt="textbee" width="28" height="28" style="vertical-align:middle;border:0;margin-right:8px;">textbee.dev</td></tr>` +
+  `<img src="${escapeHtml(logoUrl())}" alt="textbee" width="28" height="28" style="vertical-align:middle;border:0;margin-right:8px;">textbee</td></tr>` +
   '<tr><td style="padding:20px 28px 8px 28px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#1f2937;">' +
   `${bodyHtml}</td></tr>` +
   '<tr><td style="padding:12px 28px 24px 28px;border-top:1px solid #e5e7eb;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.5;color:#6b7280;">' +

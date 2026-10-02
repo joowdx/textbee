@@ -4,22 +4,21 @@
   "generatedAt": "2026-09-27",
   "senders": {
     "notifications": {
-      "from": "textbee <notifications@textbee.dev>",
-      "replyTo": "support@textbee.dev"
+      "from": "",
+      "replyTo": ""
     },
     "support": {
-      "from": "textbee support <support@textbee.dev>",
-      "replyTo": "support@textbee.dev"
+      "from": "",
+      "replyTo": ""
     }
   },
   "footers": [
     {
       "key": "footer_notice",
       "name": "Notice footer (account and usage, branded)",
-      "body": "This is a notice about your textbee account. If something in it looks wrong, you can reply to this email.\n\n[Dashboard](https://app.textbee.dev/dashboard) · [Docs](https://textbee.dev/docs)\n\n© {{year}} textbee.dev · Nuver Labs LLC, 30 N Gould St Ste N, Sheridan, WY 82801",
+      "body": "This is a notice about your textbee account. If something in it looks wrong, you can reply to this email.\n\n© {{year}} textbee",
       "required": [
-        "{{year}}",
-        "Nuver Labs LLC, 30 N Gould St Ste N, Sheridan, WY 82801"
+        "{{year}}"
       ],
       "defaultHash": "c3064b49487645fb"
     }
@@ -39,7 +38,7 @@
       "body": "# Confirm your email address\n\nHi,\n\nOne click confirms this address and unlocks sending.\n\n**[Confirm my email]({{verificationUrl}})**\n\nThe link works for {{linkTtl}}. If it has expired, sign in. Your dashboard has a \"Resend email\" button.\n\nIf you did not create a textbee account, you can ignore this email.",
       "variables": {
         "linkTtl": "20 minutes",
-        "verificationUrl": "https://app.textbee.dev/verify-email?userId=…&verificationCode=…"
+        "verificationUrl": "https://textbee.example.com/verify-email?userId=…&verificationCode=…"
       },
       "audience": "Password signups, unverified",
       "trigger": "Signup, and the resend button",
@@ -61,7 +60,7 @@
       "body": "# Confirm your email to start sending\n\nHi,\n\nYour textbee account is ready, but sending and receiving stay locked until you confirm this address. The earlier link has expired, so here is a new one:\n\n**[Confirm my email]({{verificationUrl}})**\n\nThis link works for {{linkTtl}}.\n\nIf you signed up by mistake, you do not need to do anything. The account stays inactive.",
       "variables": {
         "linkTtl": "24 hours",
-        "verificationUrl": "https://app.textbee.dev/verify-email?userId=…&verificationCode=…"
+        "verificationUrl": "https://textbee.example.com/verify-email?userId=…&verificationCode=…"
       },
       "audience": "Password signups still unverified after 24 h",
       "trigger": "24 h after signup",
@@ -84,7 +83,7 @@
       "variables": {
         "firstName": "Sam",
         "linkTtl": "20 minutes",
-        "resetUrl": "https://app.textbee.dev/reset-password?email=…&otp=…",
+        "resetUrl": "https://textbee.example.com/reset-password?email=…&otp=…",
         "otp": "482913"
       },
       "audience": "Any account",
@@ -133,7 +132,7 @@
         "proPrice": "$X.XX",
         "proYearlyPrice": "$XX.XX",
         "proYearlyMonthly": "$X.XX",
-        "upgradeUrl": "https://app.textbee.dev/checkout/pro?billingInterval=monthly",
+        "upgradeUrl": "https://textbee.example.com/checkout/pro?billingInterval=monthly",
         "used": "241",
         "limit": "300",
         "left": "59",
@@ -159,7 +158,7 @@
       "body": "# Your 30-day allowance is almost used\n\nHi {{firstName}},\n\nYour {{planName}} plan used {{used}} of its {{limit}} messages in the last 30 days. When the last {{left}} and the extra {{headroomPercent}} we allow on paid plans are used, textbee rejects every message your app sends.\n\n{{usageBar}}\n\nMove to a bigger plan now so sending does not stop.\n\n**[See bigger plans]({{billingUrl}})**\n\nIf you need more than our largest plan, reply to this email. We will set up a custom plan for your volume.",
       "variables": {
         "firstName": "Sam",
-        "billingUrl": "https://app.textbee.dev/dashboard/account/billing",
+        "billingUrl": "https://textbee.example.com/dashboard/account/billing",
         "planName": "Pro",
         "used": "4,100",
         "limit": "5,000",
@@ -192,7 +191,7 @@
         "proPrice": "$X.XX",
         "proYearlyPrice": "$XX.XX",
         "proYearlyMonthly": "$X.XX",
-        "upgradeUrl": "https://app.textbee.dev/checkout/pro?billingInterval=monthly",
+        "upgradeUrl": "https://textbee.example.com/checkout/pro?billingInterval=monthly",
         "used": "300",
         "limit": "300",
         "resetDate": "2 October",
@@ -223,7 +222,7 @@
         "scalePrice": "$XX.XX",
         "scaleYearlyPrice": "$XXX.XX",
         "scaleYearlyMonthly": "$XX.XX",
-        "scaleUpgradeUrl": "https://app.textbee.dev/checkout/scale?billingInterval=monthly",
+        "scaleUpgradeUrl": "https://textbee.example.com/checkout/scale?billingInterval=monthly",
         "planName": "Pro",
         "used": "5,500",
         "limit": "5,000",
@@ -283,7 +282,7 @@
         "proPrice": "$X.XX",
         "proYearlyPrice": "$XX.XX",
         "proYearlyMonthly": "$X.XX",
-        "upgradeUrl": "https://app.textbee.dev/checkout/pro?billingInterval=monthly",
+        "upgradeUrl": "https://textbee.example.com/checkout/pro?billingInterval=monthly",
         "used": "42",
         "limit": "50",
         "left": "8",
@@ -314,7 +313,7 @@
         "proPrice": "$X.XX",
         "proYearlyPrice": "$XX.XX",
         "proYearlyMonthly": "$X.XX",
-        "upgradeUrl": "https://app.textbee.dev/checkout/pro?billingInterval=monthly",
+        "upgradeUrl": "https://textbee.example.com/checkout/pro?billingInterval=monthly",
         "used": "50",
         "limit": "50",
         "localMidnight": "02:00",
@@ -340,7 +339,7 @@
       "body": "# Your batch was not sent\n\nHi {{firstName}},\n\n{{#bulkLimit}}Your batch had {{attempted}} recipients, and your plan allows up to {{bulkLimit}} per batch. Nothing was sent.\n\nYou can send the same list in batches of {{bulkLimit}} or fewer. Smaller batches cost nothing extra. They also do not slow delivery, because your phone sends one message at a time.{{/bulkLimit}}{{#roomLeft}}Your batch had {{attempted}} recipients, but your account has {{roomLeft}} {{roomWindow}}. Nothing was sent.\n\nYou can send a smaller batch now, or send the full batch after {{roomResetNote}}.{{/roomLeft}}\n\nPro has no batch limit and no daily limit, so the whole list goes out in one request.\n\n**[Upgrade to Pro]({{upgradeUrl}})**",
       "variables": {
         "firstName": "Sam",
-        "upgradeUrl": "https://app.textbee.dev/checkout/pro?billingInterval=monthly",
+        "upgradeUrl": "https://textbee.example.com/checkout/pro?billingInterval=monthly",
         "attempted": "120",
         "bulkLimit": "50",
         "roomLeft": "",
@@ -372,7 +371,7 @@
         "proPrice": "$X.XX",
         "proYearlyPrice": "$XX.XX",
         "proYearlyMonthly": "$X.XX",
-        "upgradeUrl": "https://app.textbee.dev/checkout/pro?billingInterval=monthly",
+        "upgradeUrl": "https://textbee.example.com/checkout/pro?billingInterval=monthly",
         "deviceName": "Pixel 6a"
       },
       "audience": "Free plan",
@@ -395,7 +394,7 @@
       "body": "# Your new phone was not added\n\nHi {{firstName}},\n\nYour {{planName}} plan covers {{deviceLimit}} active phones, and all of them are in use. A bigger plan covers more phones, so you can add this one and spread sending across all of them.\n\n**[See bigger plans]({{billingUrl}})**\n\nIf you need more phones than our largest plan covers, reply to this email and we will set up a custom plan. To stay on your plan instead, turn off a phone you no longer use on the dashboard.",
       "variables": {
         "firstName": "Sam",
-        "billingUrl": "https://app.textbee.dev/dashboard/account/billing",
+        "billingUrl": "https://textbee.example.com/dashboard/account/billing",
         "planName": "Pro",
         "deviceLimit": "5"
       },

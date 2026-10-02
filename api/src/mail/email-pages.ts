@@ -1,6 +1,5 @@
 import { escapeHtml } from './email-render'
-
-const SUPPORT = 'support@textbee.dev'
+import { supportEmail } from './email-links'
 
 const page = (title: string, body: string) =>
   '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">' +
@@ -48,5 +47,7 @@ export const invalidLinkPage = () =>
   page(
     'This link does not work',
     '<p>The link may be incomplete or changed. Copy the whole link from the email and try again.</p>' +
-      `<p>If it still does not work, write to <a href="mailto:${SUPPORT}">${SUPPORT}</a> and we will update your email settings.</p>`,
+      (supportEmail()
+        ? `<p>If it still does not work, write to <a href="mailto:${escapeHtml(supportEmail())}">${escapeHtml(supportEmail())}</a> and we will update your email settings.</p>`
+        : ''),
   )

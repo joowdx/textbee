@@ -8,17 +8,18 @@ import {
   buildSwaggerConfig,
 } from './swagger-config'
 import { PUBLIC_OPERATION_KEYS, toOperationKey } from './public-operations'
+import { apiPublicUrl } from '../mail/email-links'
 
 const PUBLIC_TITLE = 'textbee API'
 const PUBLIC_DESCRIPTION =
   'Send and receive SMS through an Android phone you own. Authenticate every request with an API key from your textbee dashboard, sent as the x-api-key header.'
-const PUBLIC_SERVER_URL = 'https://api.textbee.dev'
+const PUBLIC_SERVER_URL = apiPublicUrl()
 const PUBLIC_TAG_NAMES = ['gateway', 'webhooks']
 
 const HTTP_METHODS = ['get', 'post', 'patch', 'put', 'delete'] as const
 
 /**
- * Generates the spec published at textbee.dev/openapi.json.
+ * Generates the public spec (openapi.json), served from API_PUBLIC_URL.
  *
  * Preview mode builds the module graph and reads the controller decorators
  * without instantiating a single provider, so this runs with no Mongo, no

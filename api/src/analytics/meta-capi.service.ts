@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 import axios from 'axios'
 import { createHash } from 'crypto'
+import { appPublicUrl } from '../mail/email-links'
 
 // Pinned rather than floating. Meta retires a version roughly every two years,
 // and a silently stale one stops reporting conversions mid-campaign.
@@ -84,7 +85,7 @@ export class MetaCapiService {
           event_id: eventId,
           action_source: 'website',
           event_source_url: `${
-            process.env.FRONTEND_URL ?? 'https://app.textbee.dev'
+            appPublicUrl()
           }${event.sourcePath ?? '/'}`,
           user_data: this.userData(event.user),
           ...(event.customData && { custom_data: event.customData }),

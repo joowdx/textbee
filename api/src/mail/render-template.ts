@@ -1,14 +1,19 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as handlebars from 'handlebars'
+import { appPublicUrl, communityUrl, docsUrl, logoUrl } from './email-links'
 
 export const TEMPLATE_DIR = path.join(__dirname, 'templates')
 const PARTIAL_DIR = path.join(TEMPLATE_DIR, 'partials')
 
 // Context every template gets via the shared email-layout partial.
 export const layoutContext = () => ({
-  brandName: 'textbee.dev',
+  brandName: 'textbee',
   year: new Date().getFullYear(),
+  logoUrl: logoUrl(),
+  dashboardUrl: `${appPublicUrl()}/dashboard`,
+  docsUrl: docsUrl(),
+  communityUrl: communityUrl(),
 })
 
 let env: typeof handlebars | undefined

@@ -26,7 +26,7 @@ describe('EmailTemplatesService', () => {
     expect(r.version).toBe(0)
     expect(r.document.subject).toBe('Your textbee password was changed')
     expect(r.document.text).toContain('Hi Ada,')
-    expect(r.document.html).toContain('Nuver Labs LLC')
+    expect(r.document.html).toContain('textbee')
   })
 
   it('uses override fields that are present and keeps the rest', async () => {
@@ -147,7 +147,7 @@ describe('EmailTemplatesService', () => {
 
     const bad = build([{ key: 'footer_notice', body: 'Footer {{firstName}}', version: 2 }])
     const r = await bad.service.render('T3', T3_VARS)
-    expect(r.document.text).toContain('Nuver Labs LLC')
+    expect(r.document.text).toContain('© 2026 textbee')
     expect(bad.warn).toHaveBeenCalled()
   })
 

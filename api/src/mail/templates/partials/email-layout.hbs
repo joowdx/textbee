@@ -40,7 +40,7 @@
                 <table role='presentation' cellspacing='0' cellpadding='0' border='0'>
                   <tr>
                     <td valign='middle' style='padding-right:10px;'>
-                      <img src='https://textbee.dev/images/logo.png' alt='{{brandName}}' width='32' height='32' style='display:block; border:0; outline:none; text-decoration:none;' />
+                      <img src='{{logoUrl}}' alt='{{brandName}}' width='32' height='32' style='display:block; border:0; outline:none; text-decoration:none;' />
                     </td>
                     <td valign='middle' style='font:600 18px Arial, Helvetica, sans-serif; color:#EA580C;'>{{brandName}}</td>
                   </tr>
@@ -65,11 +65,15 @@
             <tr>
               <td align='center' style='padding:20px 8px 4px 8px; font:12px/1.7 Arial, Helvetica, sans-serif; color:#6b7280;'>
                 <div>
-                  <a href='https://app.textbee.dev/dashboard' style='color:#6b7280; text-decoration:underline;'>Dashboard</a>
+                  <a href='{{dashboardUrl}}' style='color:#6b7280; text-decoration:underline;'>Dashboard</a>
+                  {{#if docsUrl}}
                   &nbsp;·&nbsp;
-                  <a href='https://textbee.dev/docs' style='color:#6b7280; text-decoration:underline;'>Docs</a>
+                  <a href='{{docsUrl}}' style='color:#6b7280; text-decoration:underline;'>Docs</a>
+                  {{/if}}
+                  {{#if communityUrl}}
                   &nbsp;·&nbsp;
-                  <a href='https://textbee.dev/discord' style='color:#6b7280; text-decoration:underline;'>Discord</a>
+                  <a href='{{communityUrl}}' style='color:#6b7280; text-decoration:underline;'>Community</a>
+                  {{/if}}
                 </div>
                 <div style='margin-top:6px;'>&copy; {{year}} {{brandName}}</div>
               </td>

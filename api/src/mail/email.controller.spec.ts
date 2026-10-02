@@ -77,7 +77,7 @@ describe('EmailController', () => {
     await controller.unsubscribe(make(), {}, res)
 
     expect(res.status).toHaveBeenCalledWith(400)
-    expect(res.send.mock.calls[0][0]).toContain('support@textbee.dev')
+    expect(res.send.mock.calls[0][0]).not.toContain('mailto:')
     expect(userModel.updateOne).not.toHaveBeenCalled()
   })
 

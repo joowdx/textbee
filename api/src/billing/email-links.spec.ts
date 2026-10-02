@@ -5,7 +5,7 @@ describe('BillingService - signed email links', () => {
   const secret = 'link-secret'
   const env = { ...process.env }
   const nowS = () => Math.floor(Date.now() / 1000)
-  const BILLING = 'https://app.textbee.dev/dashboard/account/billing'
+  const BILLING = 'http://localhost:3000/dashboard/account/billing'
 
   const build = ({ subscription = null as any, session = null as any } = {}) => {
     const subscriptionModel = { findOne: jest.fn().mockResolvedValue(subscription) }
@@ -108,7 +108,7 @@ describe('BillingService - signed email links', () => {
       const { service } = build({ session: { ...open, ...change } })
 
       await expect(service.checkoutResumeRedirect(token())).resolves.toBe(
-        'https://app.textbee.dev/checkout/scale?billingInterval=yearly',
+        'http://localhost:3000/checkout/scale?billingInterval=yearly',
       )
     })
 
@@ -116,7 +116,7 @@ describe('BillingService - signed email links', () => {
       const { service } = build()
 
       await expect(service.checkoutResumeRedirect(token())).resolves.toBe(
-        'https://app.textbee.dev/checkout/pro?billingInterval=monthly',
+        'http://localhost:3000/checkout/pro?billingInterval=monthly',
       )
     })
 

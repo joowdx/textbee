@@ -87,7 +87,7 @@ describe('BillingNotificationsProcessor', () => {
         proMonthlyLimit: '5,000',
         proDeviceLimit: '5',
         usageLabel: 'Messages in the last 30 days',
-        upgradeUrl: 'https://app.textbee.dev/checkout/pro?billingInterval=monthly',
+        upgradeUrl: 'http://localhost:3000/checkout/pro?billingInterval=monthly',
         // window 27 Aug to 27 Sep is 31 days; oldest message 2 Sep
         resetDate: '3 October',
       },
