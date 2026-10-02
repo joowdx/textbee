@@ -2,7 +2,6 @@ import { Process, Processor } from '@nestjs/bull'
 import { InjectModel } from '@nestjs/mongoose'
 import { Job } from 'bull'
 import { Model } from 'mongoose'
-import * as firebaseAdmin from 'firebase-admin'
 import { Device } from '../schemas/device.schema'
 import { SMS } from '../schemas/sms.schema'
 import { SMSBatch } from '../schemas/sms-batch.schema'
@@ -16,6 +15,7 @@ import {
   skippedBatchResponse,
 } from '../fcm-send-skip'
 import { errorHistoryPush } from '../error-history'
+import { DeviceTransportService } from '../transport/device-transport'
 
 function getFcmErrorCode(error: { code?: string; message?: string } | null): string {
   if (!error?.code) return 'FCM_DELIVERY_FAILED'
@@ -71,6 +71,7 @@ export class SmsQueueProcessor {
     @InjectModel(SMSBatch.name) private smsBatchModel: Model<SMSBatch>,
     private webhookService: WebhookService,
     private usersService: UsersService,
+    private deviceTransport: DeviceTransportService,
   ) {}
 
   @Process({
@@ -102,7 +103,9 @@ export class SmsQueueProcessor {
       const skipped = shouldSkipFcmSend(device?.user, deviceId)
       const response = skipped
         ? skippedBatchResponse(fcmMessages.length)
-        : await firebaseAdmin.messaging().sendEach(fcmMessages)
+        : await this.deviceTransport.sendEach(
+            fcmMessages.map((message) => ({ device, message })),
+          )
       // The push is done. Anything that throws from here on is a persistence
       // problem, and must not mark handed-off messages as failed a second time.
       pushHandedOff = true

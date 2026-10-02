@@ -33,7 +33,16 @@ describe('device config', () => {
       updateNotificationsEnabled: false,
       latestVersionCode: 20,
       latestVersionName: '2.9.0',
+      mqttEnabled: false,
     })
+  })
+
+  it('turns MQTT on only for exactly "true"', () => {
+    process.env.MQTT_ENABLED = '1'
+    expect(fleetDeviceConfig().mqttEnabled).toBe(false)
+
+    process.env.MQTT_ENABLED = 'true'
+    expect(deviceConfigFor({ configOverrides: { mqttEnabled: false } }).mqttEnabled).toBe(true)
   })
 
   it('lets a device override win over the fleet default', () => {

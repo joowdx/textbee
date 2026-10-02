@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document, SchemaTypes, Types } from 'mongoose'
 import { User } from '../../users/schemas/user.schema'
+import { isDeviceOnline } from '../../mqtt/mqtt-config'
 
 export type DeviceDocument = Device & Document
 
@@ -274,6 +275,14 @@ export class Device {
   @Prop({ type: Date })
   lastPendingPollAt?: Date
 
+  // Last retained MQTT status the device published: true on connect, false
+  // from its last will when the connection drops
+  @Prop({ type: Boolean })
+  mqttConnected?: boolean
+
+  @Prop({ type: Date })
+  mqttStatusAt?: Date
+
   // set by { timestamps: true }; declared here for typing only, no @Prop
   createdAt?: Date
   updatedAt?: Date
@@ -282,3 +291,11 @@ export class Device {
 export const DeviceSchema = SchemaFactory.createForClass(Device)
 
 DeviceSchema.index({ user: 1 })
+
+// Device responses carry the derived MQTT presence as online
+DeviceSchema.set('toJSON', {
+  transform: (_doc, ret: any) => {
+    ret.online = isDeviceOnline(ret)
+    return ret
+  },
+})

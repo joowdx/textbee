@@ -2,7 +2,6 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Device, DeviceDocument } from './schemas/device.schema'
 import { Model, Types } from 'mongoose'
-import * as firebaseAdmin from 'firebase-admin'
 import { DeviceTombstone, DeviceTombstoneDocument } from './schemas/device-tombstone.schema'
 import {
   ReceivedSMSDTO,
@@ -61,6 +60,12 @@ import {
 import { DispatchPlan } from './queue/dispatch-pacing'
 import { Job } from 'bull'
 import { pricingUrl } from '../mail/email-links'
+import { DeviceTransportService } from './transport/device-transport'
+import {
+  isDeviceOnline,
+  mqttEnabled,
+  onlineDeviceFilter,
+} from '../mqtt/mqtt-config'
 
 // device.user is a ref, so it is an ObjectId unless the query populated it.
 function userIdOf(user: any) {
@@ -81,6 +86,7 @@ export class GatewayService {
     private smsQueueService: SmsQueueService,
     private usersService: UsersService,
     private readonly userRollup: UserRollupService,
+    private readonly deviceTransport: DeviceTransportService,
   ) {}
 
   // Blocks creating or re-enabling a device when the user's plan device limit
@@ -277,6 +283,18 @@ export class GatewayService {
       isDefault: true,
       enabled: true,
     })
+
+    // With MQTT on, a device that is connected right now beats an offline
+    // default, since the push reaches it at once
+    if (mqttEnabled() && !isDeviceOnline(defaultDevice)) {
+      const onlineDevice = await this.deviceModel
+        .findOne({ user: user._id, enabled: true, ...onlineDeviceFilter() })
+        .sort({ lastHeartbeat: -1, _id: -1 })
+
+      if (onlineDevice) {
+        return onlineDevice
+      }
+    }
 
     if (defaultDevice) {
       return defaultDevice
@@ -718,7 +736,9 @@ export class GatewayService {
       const skipped = shouldSkipFcmSend(device.user, deviceId)
       const response = skipped
         ? skippedBatchResponse(fcmMessages.length)
-        : await firebaseAdmin.messaging().sendEach(fcmMessages)
+        : await this.deviceTransport.sendEach(
+            fcmMessages.map((message) => ({ device, message })),
+          )
 
       console.log(response)
 
@@ -1103,7 +1123,9 @@ export class GatewayService {
       try {
         const response = skipped
           ? skippedBatchResponse(batch.length)
-          : await firebaseAdmin.messaging().sendEach(batch)
+          : await this.deviceTransport.sendEach(
+              batch.map((message) => ({ device, message })),
+            )
 
         console.log(response)
         fcmResponses.push(response)

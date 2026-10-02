@@ -808,6 +808,13 @@ export class DeviceDTO {
   lastHeartbeat?: Date
 
   @ApiProperty({
+    type: Boolean,
+    description:
+      'Whether the device holds a live MQTT connection, or dropped it within the last MQTT_PRESENCE_GRACE_SECONDS. Always false when MQTT is off.',
+  })
+  online: boolean
+
+  @ApiProperty({
     type: BatteryInfoDTO,
     required: false,
     description: 'Battery level at the last heartbeat.',
@@ -1465,6 +1472,9 @@ export class DeviceConfigDTO {
 
   @ApiProperty({ type: String, description: 'versionName of the latest release' })
   latestVersionName: string
+
+  @ApiProperty({ type: Boolean, description: 'Connect to the MQTT broker for pushes' })
+  mqttEnabled: boolean
 }
 
 export class HeartbeatResponseDTO {
@@ -1768,4 +1778,27 @@ export class SMSBatchResponseDTO {
     description: 'The batch and the messages in it.',
   })
   data: SMSBatchResultDTO
+}
+
+export class MqttCredentialsDTO {
+  @ApiProperty({ type: String, description: 'Broker WebSocket URL' })
+  url: string
+
+  @ApiProperty({ type: String, description: 'Broker username for this device' })
+  username: string
+
+  @ApiProperty({ type: String, description: 'Broker password, shown once' })
+  password: string
+
+  @ApiProperty({
+    type: String,
+    description: 'Topic prefix this device may use',
+    example: 'textbee/devices/{deviceId}/',
+  })
+  topicPrefix: string
+}
+
+export class MqttCredentialsResponseDTO {
+  @ApiProperty({ type: MqttCredentialsDTO, description: 'New broker credentials.' })
+  data: MqttCredentialsDTO
 }

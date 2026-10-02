@@ -16,6 +16,14 @@ import { SmsQueueService } from './queue/sms-queue.service'
 import { SmsQueueProcessor } from './queue/sms-queue.processor'
 import { SmsStatusUpdateTask } from './tasks/sms-status-update.task'
 import { HeartbeatCheckTask } from './tasks/heartbeat-check.task'
+import { MqttModule } from '../mqtt/mqtt.module'
+import { MqttUplinkHandler } from '../mqtt/mqtt-uplink.handler'
+import { DevicePresenceService } from '../mqtt/device-presence.service'
+import {
+  DeviceTransportService,
+  FcmTransport,
+  MqttTransport,
+} from './transport/device-transport'
 
 @Module({
   imports: [
@@ -62,9 +70,21 @@ import { HeartbeatCheckTask } from './tasks/heartbeat-check.task'
     WebhookModule,
     forwardRef(() => BillingModule),
     ConfigModule,
+    MqttModule,
   ],
   controllers: [GatewayController],
-  providers: [GatewayService, SmsQueueService, SmsQueueProcessor, SmsStatusUpdateTask, HeartbeatCheckTask],
+  providers: [
+    GatewayService,
+    SmsQueueService,
+    SmsQueueProcessor,
+    SmsStatusUpdateTask,
+    HeartbeatCheckTask,
+    FcmTransport,
+    MqttTransport,
+    DeviceTransportService,
+    DevicePresenceService,
+    MqttUplinkHandler,
+  ],
   exports: [MongooseModule, GatewayService, SmsQueueService],
 })
 export class GatewayModule {}

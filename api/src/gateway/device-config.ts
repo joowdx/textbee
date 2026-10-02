@@ -7,6 +7,7 @@ export type DeviceConfig = {
   updateNotificationsEnabled: boolean
   latestVersionCode: number
   latestVersionName: string
+  mqttEnabled: boolean
 }
 
 // versionCode of the first build that carries the send dedupe store. The
@@ -31,6 +32,8 @@ export function fleetDeviceConfig(): DeviceConfig {
     updateNotificationsEnabled: envBool('UPDATE_NOTIFICATIONS_ENABLED', false),
     latestVersionCode: envInt('LATEST_APP_VERSION_CODE', 18),
     latestVersionName: process.env.LATEST_APP_VERSION_NAME?.trim() || '2.8.0',
+    // Fleet-wide only: it follows whether the server runs a broker
+    mqttEnabled: process.env.MQTT_ENABLED === 'true',
   }
 }
 

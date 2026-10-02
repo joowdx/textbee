@@ -23,6 +23,11 @@ import { decodeCursor } from './cursor'
 import { User } from '../users/schemas/user.schema'
 import { UserRole } from '../users/user-roles.enum'
 import { BatchResponse } from 'firebase-admin/messaging'
+import {
+  DeviceTransportService,
+  FcmTransport,
+  MqttTransport,
+} from './transport/device-transport'
 
 // Mock firebase-admin
 jest.mock('firebase-admin', () => ({
@@ -153,6 +158,13 @@ describe('GatewayService', () => {
         {
           provide: UserRollupService,
           useValue: { refreshQuietly: jest.fn().mockResolvedValue(undefined) },
+        },
+        {
+          provide: DeviceTransportService,
+          useValue: new DeviceTransportService(
+            new FcmTransport(),
+            new MqttTransport({ isConnected: () => false } as any),
+          ),
         },
       ],
       imports: [ConfigModule],
@@ -599,6 +611,61 @@ describe('GatewayService', () => {
       })
       expect(sort).toHaveBeenCalledWith({ lastHeartbeat: -1, _id: -1 })
       expect(result).toEqual(device)
+    })
+
+    describe('with MQTT enabled', () => {
+      const originalMqttEnabled = process.env.MQTT_ENABLED
+
+      beforeEach(() => {
+        process.env.MQTT_ENABLED = 'true'
+      })
+
+      afterEach(() => {
+        if (originalMqttEnabled === undefined) delete process.env.MQTT_ENABLED
+        else process.env.MQTT_ENABLED = originalMqttEnabled
+      })
+
+      it('keeps an online default device', async () => {
+        const device = { _id: OWN_DEVICE, enabled: true, isDefault: true, mqttConnected: true }
+        mockDeviceModel.findOne.mockResolvedValueOnce(device)
+
+        const result = await service.resolveSenderDevice(mockUser)
+
+        expect(mockDeviceModel.findOne).toHaveBeenCalledTimes(1)
+        expect(result).toEqual(device)
+      })
+
+      it('prefers an online device over an offline default', async () => {
+        const defaultDevice = { _id: OWN_DEVICE, enabled: true, isDefault: true }
+        const onlineDevice = { _id: OTHER_DEVICE, enabled: true, mqttConnected: true }
+        const sort = jest.fn().mockResolvedValue(onlineDevice)
+        mockDeviceModel.findOne
+          .mockResolvedValueOnce(defaultDevice)
+          .mockReturnValueOnce({ sort })
+
+        const result = await service.resolveSenderDevice(mockUser)
+
+        expect(mockDeviceModel.findOne).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            user: mockUser._id,
+            enabled: true,
+            $or: expect.any(Array),
+          }),
+        )
+        expect(result).toEqual(onlineDevice)
+      })
+
+      it('keeps the offline default when no device is online', async () => {
+        const defaultDevice = { _id: OWN_DEVICE, enabled: true, isDefault: true }
+        const sort = jest.fn().mockResolvedValue(null)
+        mockDeviceModel.findOne
+          .mockResolvedValueOnce(defaultDevice)
+          .mockReturnValueOnce({ sort })
+
+        const result = await service.resolveSenderDevice(mockUser)
+
+        expect(result).toEqual(defaultDevice)
+      })
     })
 
     it('throws when the user has no enabled device', async () => {

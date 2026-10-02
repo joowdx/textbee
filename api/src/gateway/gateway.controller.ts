@@ -46,10 +46,12 @@ import {
   UpdateSMSStatusDTO,
   HeartbeatInputDTO,
   HeartbeatResponseDTO,
+  MqttCredentialsResponseDTO,
 } from './gateway.dto'
 import { GatewayService } from './gateway.service'
 import { CanModifyDevice } from './guards/can-modify-device.guard'
 import { parseMessageQuery } from './message-query'
+import { MqttService } from '../mqtt/mqtt.service'
 
 const DEVICE_ID_PARAM = {
   name: 'id',
@@ -90,7 +92,10 @@ function parsePagination(query: {
 @ApiSecurity('x-api-key')
 @Controller('gateway')
 export class GatewayController {
-  constructor(private readonly gatewayService: GatewayService) {}
+  constructor(
+    private readonly gatewayService: GatewayService,
+    private readonly mqttService: MqttService,
+  ) {}
 
   @UseGuards(AuthGuard)
   @ApiOperation({
@@ -242,6 +247,29 @@ export class GatewayController {
   ): Promise<HeartbeatResponseDTO> {
     const data = await this.gatewayService.heartbeat(deviceId, input)
     return data
+  }
+
+  @ApiOperation({
+    summary: 'Rotate the device MQTT credentials',
+    description:
+      'Called by the textbee app to get broker credentials. Every call replaces the previous password and drops a connection that used it.',
+  })
+  @ApiParam(DEVICE_ID_PARAM)
+  @ApiResponse({
+    status: 200,
+    description: 'New broker credentials.',
+    type: MqttCredentialsResponseDTO,
+  })
+  @ApiResponse(INVALID_DEVICE_ID_RESPONSE)
+  @ApiResponse(UNAUTHORIZED_RESPONSE)
+  @ApiResponse(DEVICE_NOT_FOUND_RESPONSE)
+  @ApiResponse({ status: 409, description: 'MQTT is not enabled on this server.' })
+  @UseGuards(AuthGuard, CanModifyDevice)
+  @Post('/devices/:id/mqtt-credentials')
+  @HttpCode(HttpStatus.OK)
+  async rotateMqttCredentials(@Param('id') deviceId: string) {
+    const data = await this.mqttService.rotateDeviceCredentials(deviceId)
+    return { data }
   }
 
   @ApiOperation({

@@ -1,5 +1,10 @@
 import { SmsQueueProcessor, resolveBatchStatus } from './sms-queue.processor'
 import * as firebaseAdmin from 'firebase-admin'
+import {
+  DeviceTransportService,
+  FcmTransport,
+  MqttTransport,
+} from '../transport/device-transport'
 
 jest.mock('firebase-admin', () => ({
   messaging: jest.fn().mockReturnValue({
@@ -97,6 +102,10 @@ describe('SmsQueueProcessor.handleSendSms', () => {
       mockSmsBatchModel as any,
       mockWebhookService as any,
       mockUsersService as any,
+      new DeviceTransportService(
+        new FcmTransport(),
+        new MqttTransport({ isConnected: () => false } as any),
+      ),
     )
   })
 

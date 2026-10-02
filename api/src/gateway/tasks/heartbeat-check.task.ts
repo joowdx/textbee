@@ -3,9 +3,8 @@ import { Cron, CronExpression } from '@nestjs/schedule'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types } from 'mongoose'
 import { Device, DeviceDocument } from '../schemas/device.schema'
-import * as firebaseAdmin from 'firebase-admin'
-import { Message } from 'firebase-admin/messaging'
 import { heartbeatAndroidConfig } from '../fcm-push-options'
+import { Delivery, DeviceTransportService } from '../transport/device-transport'
 
 const FCM_BATCH_SIZE = 500
 
@@ -46,6 +45,7 @@ export class HeartbeatCheckTask {
 
   constructor(
     @InjectModel(Device.name) private deviceModel: Model<DeviceDocument>,
+    private deviceTransport: DeviceTransportService,
   ) {}
 
   /**
@@ -81,7 +81,7 @@ export class HeartbeatCheckTask {
       )
 
       // Send FCM messages to trigger heartbeats
-      const fcmMessages: Message[] = []
+      const fcmMessages: Delivery[] = []
       const deviceIds: string[] = []
 
       for (const device of devices) {
@@ -89,15 +89,16 @@ export class HeartbeatCheckTask {
           continue
         }
 
-        const fcmMessage: Message = {
-          data: {
-            type: 'heartbeat_check',
+        fcmMessages.push({
+          device,
+          message: {
+            data: {
+              type: 'heartbeat_check',
+            },
+            token: device.fcmToken,
+            android: heartbeatAndroidConfig(),
           },
-          token: device.fcmToken,
-          android: heartbeatAndroidConfig(),
-        }
-
-        fcmMessages.push(fcmMessage)
+        })
         deviceIds.push(device._id.toString())
       }
 
@@ -113,7 +114,7 @@ export class HeartbeatCheckTask {
       for (let i = 0; i < fcmMessages.length; i += FCM_BATCH_SIZE) {
         const batch = fcmMessages.slice(i, i + FCM_BATCH_SIZE)
         const batchDeviceIds = deviceIds.slice(i, i + FCM_BATCH_SIZE)
-        const response = await firebaseAdmin.messaging().sendEach(batch)
+        const response = await this.deviceTransport.sendEach(batch)
 
         totalSuccessCount += response.successCount
         totalFailureCount += response.failureCount

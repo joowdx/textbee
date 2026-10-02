@@ -54,10 +54,13 @@ services:
     environment:
       - PORT=${PORT:-3001}
       - REDIS_URL=${REDIS_URL:-redis://textbee-redis:6379}
+      - MQTT_URL=${MQTT_URL:-mqtt://textbee-mqtt:1883}
 
     depends_on:
       textbee-db:
         condition: service_healthy
+      textbee-mqtt:
+        condition: service_started
     networks:
       - textbee-network
 
@@ -101,6 +104,19 @@ services:
       retries: 3
       start_period: 20s
 
+  # MQTT broker for the device transport (see mqtt/README.md). No published
+  # ports: the API reaches 1883 over the Docker network, and the reverse
+  # proxy and tunnel point at the WebSocket listener on 9001.
+  textbee-mqtt:
+    container_name: textbee-mqtt
+    image: eclipse-mosquitto:2
+    restart: always
+    volumes:
+      - ./mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mqtt_data:/mosquitto/data
+    networks:
+      - textbee-network
+
 networks:
   textbee-network:
     driver: bridge
@@ -108,3 +124,4 @@ networks:
 volumes:
   mongodb_data:
   redis_data: 
+  mqtt_data:
