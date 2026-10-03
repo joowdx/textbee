@@ -1,6 +1,6 @@
 # Android Build Variants Setup (Dev vs Prod)
 
-This document explains how to use the dev and prod build variants for the SMS Gateway Android app.
+This document explains how to use the dev and prod build variants for the textbeeqtt Android app.
 
 ## Overview
 
@@ -13,8 +13,8 @@ The app now supports two build variants:
 | Feature | Dev | Prod |
 |---------|-----|------|
 | Package Name | `com.vernu.sms.dev` | `com.vernu.sms` |
-| App Name | "SMS Gateway (Dev)" | "SMS Gateway" |
-| API Base URL | `https://api-dev.textbee.dev/api/v1/` | `https://api.textbee.dev/api/v1/` |
+| App Name | "textbeeqtt (Dev)" | "textbeeqtt" |
+| API Base URL | `-PtextbeeDevApiBaseUrl` | `-PtextbeeApiBaseUrl` |
 | Firebase Config | `app/src/dev/google-services.json` | `app/src/prod/google-services.json` |
 | Version Suffix | `-dev` appended | No suffix |
 
@@ -32,18 +32,21 @@ The app now supports two build variants:
 - **Important**: Make sure the package name in Firebase is set to `com.vernu.sms.dev`
 - Replace the template file at `app/src/dev/google-services.json` with your actual dev configuration
 
-### 2. API Configuration
+### 2. API, links and MQTT
 
-The API base URLs are now configured via build variants:
-- **Dev**: `https://api-dev.textbee.dev/api/v1/`
-- **Prod**: `https://api.textbee.dev/api/v1/`
+Release values come from Gradle properties, so pointing the app at your own instance needs no source edits:
 
-To change the dev API URL, edit the `buildConfigField` in `app/build.gradle`:
-```gradle
-dev {
-    buildConfigField "String", "API_BASE_URL", '"https://api-dev.textbee.dev/api/v1/"'
-}
+```bash
+./gradlew assembleProdRelease \
+  -PtextbeeApiBaseUrl=https://api.example.com/api/v1/ \
+  -PtextbeeDevApiBaseUrl=https://api-dev.example.com/api/v1/ \
+  -PtextbeeWebBaseUrl=https://app.example.com \
+  -PtextbeeReleasesRepo=owner/repo
 ```
+
+Other properties: `textbeeApplicationId`, `textbeeVersionCode`, `textbeeVersionName`, `textbeeDocsUrl`, `textbeeSupportUrl`, `textbeeCommunityUrl`, `textbeePricingUrl`, `textbeeTermsUrl`, `textbeePrivacyUrl`. Defaults live at the top of `app/build.gradle`.
+
+The MQTT broker address is not a build setting. The API turns MQTT on through the heartbeat reply and hands each device its `wss://` URL and credentials (see `../mqtt/README.md`). FCM is still required as the fallback and wake-up push, so every variant needs its `google-services.json`.
 
 ## Building the App
 

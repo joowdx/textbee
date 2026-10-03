@@ -2,7 +2,7 @@
 
 ## Overview
 
-textbee Android is mid-migration from a Java/XML legacy codebase to Kotlin + Jetpack Compose. The new UI runs in parallel with the legacy UI — users can switch between them via Settings. The SplashActivity routes to the appropriate UI on launch.
+textbeeqtt Android is mid-migration from a Java/XML legacy codebase to Kotlin + Jetpack Compose. The new UI runs in parallel with the legacy UI — users can switch between them via Settings. The SplashActivity routes to the appropriate UI on launch.
 
 ---
 
@@ -155,9 +155,24 @@ All workers, receivers, and services ported to Kotlin; Java originals deleted.
 | `workers/SMSReceivedWorker.kt` | Fingerprint-based unique work name for deduplication |
 | `workers/SMSStatusUpdateWorker.kt` | Exponential backoff, max 5 retries |
 | `services/StickyNotificationService.kt` | Broad `Exception` catch replaces API-31-only `ForegroundServiceStartNotAllowedException` |
-| `services/FCMService.kt` | Handles `heartbeat_check` type + SMS payload dispatch |
+| `services/FCMService.kt` | Thin FCM entry point; hands `heartbeat_check` and SMS payloads to `SmsCommandHandler` |
 
 **Sticky notification fix**: Added service restart to `DashboardViewModel.loadLocalState()` — on every app launch, if gateway + sticky notification are enabled, the service is restarted. This matches legacy `MainActivity` behaviour and fixes the notification disappearing after Android kills the service on newer OS versions.
+
+---
+
+### MQTT transport ✅ Complete
+Commands and reports can travel over MQTT (HiveMQ MQTT 5 client over WebSockets) with FCM and HTTP as fallbacks.
+
+| File | Notes |
+|---|---|
+| `mqtt/MqttClientManager.kt` | Single-threaded client owned by `StickyNotificationService`; reconnects on network change with backoff, re-fetches credentials when the broker rejects them |
+| `mqtt/MqttEndpoint.kt` | Parses `wss`/`ws`/`mqtts`/`mqtt` URLs |
+| `mqtt/MqttTopics.kt`, `MqttCommandParser.kt`, `Uplink.kt`, `MqttCredentials.kt` | Topic layout under `textbee/devices/{id}/`, payload parsing, uplink publishing, stored credentials |
+| `services/SmsCommandHandler.kt` + `database/SmsDedupeStore.kt` | One path for commands from FCM or MQTT; a command delivered on both is sent once |
+| `workers/SMSReceivedWorker.kt`, `SMSStatusUpdateWorker.kt` | Publish over MQTT when connected, otherwise HTTP |
+
+The server enables MQTT through `CONFIG_MQTT_ENABLED` in the heartbeat config (`helpers/DeviceConfig.kt`); there is no user toggle. Device Health shows a "Live connection" row.
 
 ---
 

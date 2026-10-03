@@ -1,6 +1,6 @@
-# textbee MQTT broker
+# textbeeqtt MQTT broker
 
-An optional, two-way device transport. With `MQTT_ENABLED=true` the API sends
+The optional, two-way device transport that gives textbeeqtt its name. With `MQTT_ENABLED=true` the API sends
 to connected devices over MQTT and keeps FCM as the fallback and wake-up push.
 Devices learn the flag from the heartbeat reply and fetch their credentials
 from `POST /api/v1/gateway/devices/:id/mqtt-credentials`.

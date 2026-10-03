@@ -1,316 +1,175 @@
-![GitHub stars](https://img.shields.io/github/stars/textbee/textbee)
-![License](https://img.shields.io/github/license/textbee/textbee)
-![Release](https://img.shields.io/github/v/release/textbee/textbee)
-[![Discord](https://img.shields.io/discord/1236287182940016723?label=Discord&logo=discord)](https://textbee.dev/discord)
+<p align="center">
+  <img src="branding/icon-circle.png" alt="textbeeqtt" width="128">
+</p>
 
-# textbee.dev - android sms gateway
+# textbeeqtt - self-hosted android sms gateway over MQTT
 
-Send and receive SMS messages using your own Android phone - no Twilio, no per-message fees. Free, open-source, and self-hostable.
+Send and receive SMS with your own Android phone, through a dashboard, a REST API or an MCP server, on infrastructure you run yourself.
 
-The open-source SMS gateway for developers, automations, and AI agents. Manage SMS messages through a web dashboard, a REST API, or the [MCP server](#use-with-ai-agents-mcp) for AI agents. textbee is ideal for businesses, developers, and hobbyists looking for a reliable and cost-effective solution to automate SMS messaging.
+textbeeqtt is a fork of [vernu/textbee](https://github.com/vernu/textbee). It keeps the textbee API and app, and adds:
 
-**Website:** [https://textbee.dev](https://textbee.dev?ref=gh-readme)
+- **MQTT transport.** The API reaches devices over a persistent MQTT connection to a Mosquitto broker it runs alongside. FCM stays as the fallback and the wake-up push.
+- **A private instance.** Accounts are limited to an email allowlist and public sign-up is closed.
+- **No textbee.dev dependency.** Every link, address and logo comes from environment variables or build properties.
+- **Its own releases.** The Android app checks this fork's GitHub releases for updates. CI builds the APK and the web app from this repository.
 
-![textbee.dev landing page](.github/assets/landing-page.png)
-
-
- 
-## Why textbee?
- 
-|  | textbee | Twilio & similar APIs |
-|---|---|---|
-| Cost per SMS | Your carrier plan (often free/unlimited) | ~$0.008+ per message |
-| Phone number | Your own SIM | Rented number |
-| Self-hostable | ✅ Full control over your data | ❌ |
-| Open source | ✅ | ❌ |
-| Setup time | ~2 minutes | Account approval, compliance forms |
- 
 ## Features
- 
-- Send & receive SMS messages via API & dashboard
-- Use your own Android phone as an SMS gateway
-- REST API for easy integration with apps & services
-- Send bulk SMS with CSV file
-- Multi-device support for higher SMS throughput
-- Secure API authentication with API keys
-- Webhook support for incoming messages
-- Self-hosting support for full control over your data
 
+- Send and receive SMS via the REST API and the dashboard
+- Use your own Android phone (or several) as the gateway
+- Bulk SMS from a CSV file
+- Webhooks for incoming messages
+- API key authentication
+- Near-instant delivery to connected devices over MQTT, with FCM as the fallback
 
-## Getting Started
- 
-1. Go to [textbee.dev](https://textbee.dev) and register or login with your account
-2. Install the app on your Android phone from [textbee.dev/download](https://textbee.dev/download)
-3. Open the app and grant the permissions for SMS
-4. Go to [textbee.dev/dashboard](https://textbee.dev/dashboard) and click register device / generate API key
-5. Scan the QR code with the app or enter the API key manually
-6. You're ready to send SMS from the dashboard or from your application via the REST API
+## How it works
 
+```
+             REST / dashboard
+  client ───────────────────────▶  api (NestJS) ──── MongoDB, Redis
+                                     │      │
+                    MQTT (QoS 1)     │      │  FCM (fallback, wake-up)
+                ┌────────────────────┘      │
+                ▼                           ▼
+         mosquitto broker  ◀── wss ──▶  Android app ──▶ SMS
+```
 
+- **Sending.** The API publishes the send to `textbee/devices/{id}/down/send` when MQTT is enabled, the API is connected to the broker and the device is online. In every other case it pushes over FCM as before.
+  - A failed MQTT publish is retried over FCM. The device drops duplicates, so a message is never sent twice.
+- **Presence.** Each device holds a retained `status` topic with a last will. A device counts as online while it is connected, or for `MQTT_PRESENCE_GRACE_SECONDS` (default 90) after it drops. When it drops, the API sends one FCM heartbeat check to wake it.
+- **Reports.** The app publishes delivery status and received messages on `up/sms-status` and `up/received`. When it has no MQTT connection, it falls back to HTTP.
+- **Enabling.** Devices learn whether MQTT is on from the heartbeat reply, then fetch per-device broker credentials from the API. The app has no toggle. Device Health shows the live connection state.
+
+Topics, ACLs and broker setup are in [mqtt/README.md](mqtt/README.md).
+
+## Getting started
+
+1. Deploy the stack (see [Self-hosting](#self-hosting)) and add your address to `ALLOWED_EMAILS`.
+2. Sign in to the dashboard and generate an API key or register a device.
+3. Install the APK from this repository's [releases](https://github.com/joowdx/textbee/releases), open it and grant the SMS permissions.
+4. Scan the QR code from the dashboard, or enter the API key by hand.
+5. Send from the dashboard or the REST API.
 
 ### Sending an SMS
 
-Messages go out through your default device, or otherwise the enabled device with the most recent heartbeat. Pass an optional `deviceId` in the request body to send from a specific device instead. The older `/gateway/devices/{deviceId}/send-sms` route still works but is deprecated.
- 
-```javascript
-const API_KEY = 'YOUR_API_KEY';
- 
-await axios.post('https://api.textbee.dev/api/v1/gateway/send-sms', {
-  recipients: [ '+12025550123' ],
-  message: 'Hello World!',
-}, {
-  headers: { 'x-api-key': API_KEY },
-});
-```
- 
-<details>
-<summary><b>Python</b></summary>
-```python
-import requests
- 
-API_KEY = 'YOUR_API_KEY'
- 
-requests.post(
-    'https://api.textbee.dev/api/v1/gateway/send-sms',
-    json={
-        'recipients': ['+12025550123'],
-        'message': 'Hello World!',
-    },
-    headers={'x-api-key': API_KEY},
-)
-```
- 
-</details>
-<details>
-<summary><b>curl</b></summary>
+Messages go out through your default device, or otherwise through the enabled device with the most recent heartbeat. To send from a specific device, pass an optional `deviceId`.
+
 ```bash
-curl -X POST "https://api.textbee.dev/api/v1/gateway/send-sms" \
+curl -X POST "https://api.example.com/api/v1/gateway/send-sms" \
   -H 'x-api-key: YOUR_API_KEY' \
   -H 'Content-Type: application/json' \
-  -d '{
-    "recipients": [ "+12025550123" ],
-    "message": "Hello World!"
-  }'
+  -d '{ "recipients": [ "+12025550123" ], "message": "Hello World!" }'
 ```
- 
-</details>
+
 ### Receiving SMS
- 
-Enable SMS receiving in the mobile app, then access incoming messages via the REST API, the dashboard, or webhook notifications delivered to your preferred URL. Message history is account-level: one call covers every device, no device id needed.
- 
-```javascript
-const API_KEY = 'YOUR_API_KEY';
- 
-await axios.get('https://api.textbee.dev/api/v1/gateway/messages?direction=received', {
-  headers: { 'x-api-key': API_KEY },
-});
-```
- 
-<details>
-<summary><b>curl</b></summary>
+
+Enable receiving in the app, then read messages through the API, the dashboard or a webhook. History is account-level, so one call covers every device.
+
 ```bash
-curl -X GET "https://api.textbee.dev/api/v1/gateway/messages?direction=received" \
-  -H "x-api-key: YOUR_API_KEY"
+curl "https://api.example.com/api/v1/gateway/messages?direction=received" \
+  -H 'x-api-key: YOUR_API_KEY'
 ```
- 
-</details>
 
 ### Use with AI agents (MCP)
 
-The official [textbee MCP server](https://github.com/textbee/textbee-mcp) lets Claude Desktop, Claude Code, Cursor, and any MCP-compatible client send and read SMS through your account. Your API key stays on your machine, and plan limits apply server-side like any other send.
+The upstream [textbee MCP server](https://github.com/textbee/textbee-mcp) works against this instance. Point it at your API with `TEXTBEE_BASE_URL`:
 
 ```json
 {
   "mcpServers": {
-    "textbee": {
+    "textbeeqtt": {
       "command": "npx",
       "args": ["-y", "@textbee/mcp"],
-      "env": { "TEXTBEE_API_KEY": "YOUR_API_KEY" }
+      "env": {
+        "TEXTBEE_API_KEY": "YOUR_API_KEY",
+        "TEXTBEE_BASE_URL": "https://api.example.com"
+      }
     }
   }
 }
 ```
 
-Three tools: `send_sms` (send to one or many recipients), `get_messages` (read replies and verification codes, check delivery status), and `list_devices`. Self-hosted instances work with `TEXTBEE_BASE_URL`. Details at [textbee.dev/mcp](https://textbee.dev/mcp?ref=gh-readme) and the [agent docs](https://textbee.dev/docs/agents/mcp?ref=gh-readme).
+## Self-hosting
 
-## Use Cases
- 
-- OTP / 2FA delivery for your app
-- Order and appointment notifications
-- Alerts from servers, cron jobs, and home automation
-- Form-to-SMS and lead follow-ups
-- Bulk announcements to a contact list (CSV upload)
-## FAQ
- 
-<details>
-<summary><b>Will my carrier block my number for sending too many messages?</b></summary>
-Carriers apply their own rate limits and anti-spam policies, which vary by country and plan. For personal and low-volume use this is rarely an issue. For higher throughput, use multiple devices/SIMs and keep sending rates reasonable. You are responsible for staying within your carrier's terms.
- 
-</details>
-<details>
-<summary><b>Is it legal to send marketing SMS this way?</b></summary>
-SMS marketing is regulated in most countries (e.g., TCPA in the US, GDPR/ePrivacy in the EU). textbee is a tool. You are responsible for obtaining consent and complying with the laws that apply to you and your recipients.
- 
-</details>
-<details>
-<summary><b>Does my phone need to stay on?</b></summary>
-Yes. Messages are sent through your phone, so it needs to be powered on with the app running and connected to the internet. A spare Android phone plugged into a charger works great as a dedicated gateway.
- 
-</details>
-<details>
-<summary><b>Is there a limit on the cloud-hosted version?</b></summary>
-See [textbee.dev](https://textbee.dev) for current plans and limits. You can always self-host for full control.
- 
-</details>
+**Stack**: Next.js (web), NestJS (api), MongoDB, Redis, Mosquitto, Android (Kotlin, Jetpack Compose).
 
+### Docker
 
-## Self-Hosting
-
-**Technology stack**: React, Next.js, Node.js, NestJS, MongoDB, Android, Kotlin, Jetpack Compose, Java (legacy)
-
-### Setting Up Database
-
-1. **Install MongoDB on Your Server**: Follow the official MongoDB installation guide for your operating system.
-2. **Using MongoDB Atlas**: Alternatively, you can create a free database on MongoDB Atlas. Sign up at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) and follow the instructions to set up your database.
-
-
-### Firebase Setup
-
-1. Create a Firebase project.
-2. Enable Firebase Cloud Messaging (FCM) in your Firebase project.
-3. Obtain the Firebase credentials for backend use and the Android app.
-
-### Building the Android App
-
-1. Clone the repository and navigate to the Android project directory.
-2. Update the `google-services.json` file with your Firebase project configuration.
-3. Update every occurrence of `textbee.dev` with your own domain in the project.
-4. Build the app using Android Studio or the command line:
+1. Copy the env files and fill them in:
    ```bash
-   ./gradlew assembleRelease
+   cp web/.env.example web/.env && cp api/.env.example api/.env
    ```
-
-### Building the Web
-
-1. Navigate to the `web` directory.
-2. Copy the `.env.example` file to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-3. Update the `.env` file with your own credentials.
-4. Install dependencies:
-   ```bash
-   pnpm install
-   ```
-5. Build the web application:
-   ```bash
-   pnpm build
-   ```
-
-### Building the API
-
-1. Navigate to the `api` directory.
-2. Copy the `.env.example` file to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-3. Update the `.env` file with your own credentials.
-4. Install dependencies:
-   ```bash
-   pnpm install
-   ```
-5. Build the API:
-   ```bash
-   pnpm build
-   ```
-
-### Analytics and telemetry
-
-**A self-hosted instance reports nothing to anyone by default.** With no
-analytics environment variables set, the web app loads no analytics or
-ad-platform scripts and the API sends no analytics events to any external
-service. Every provider below is opt-in, and one that is listed without its id
-is skipped.
-
-(This is separate from the services the API talks to when you configure them
-yourself: Firebase for push, Cloudflare Turnstile, Polar for billing, and your
-own SMTP server.)
-
-Web (`web/.env`, and the marketing site if you run it):
-
-| Variable | Purpose |
-| --- | --- |
-| `NEXT_PUBLIC_ANALYTICS_PROVIDERS` | Comma separated list of providers to load: `ga`, `clarity`, `meta`. Unset means none. |
-| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Google Analytics measurement id, required for `ga`. |
-| `NEXT_PUBLIC_CLARITY_PROJECT_ID` | Microsoft Clarity project id, required for `clarity`. |
-| `NEXT_PUBLIC_META_PIXEL_ID` | Meta pixel id, required for `meta`. |
-| `NEXT_PUBLIC_ATTRIBUTION_COOKIE_DOMAIN` | Cookie domain for signup attribution, for example `.example.com`, when the dashboard and the marketing site are on different subdomains. Leave unset for a single domain. |
-
-API (`api/.env`):
-
-| Variable | Purpose |
-| --- | --- |
-| `ANALYTICS_PROVIDERS` | Comma separated list of server-side destinations. Only `meta` today. Unset means no events are sent. |
-| `META_PIXEL_ID` | Same id as the browser pixel. |
-| `META_CAPI_ACCESS_TOKEN` | Conversions API token. Keep it out of version control and out of any `NEXT_PUBLIC_` variable. |
-| `META_CAPI_TEST_EVENT_CODE` | Optional. Routes events to Events Manager's test view instead of live reporting. |
-
-`NEXT_PUBLIC_` values are baked in at build time, so changing them means a
-rebuild, not just a restart. `ANALYTICS_PROVIDERS` on the API is read at
-runtime, so unsetting it and restarting stops all outbound events immediately.
-
-Signup attribution (which channel an account came from) is separate from the
-providers above. It is stored only in your own database, makes no external
-request, and is always on.
-
-### Hosting on a VPS
-
-1. Install `pnpm`, `pm2`, and `Caddy` on your VPS.
-2. Use `pm2` to manage your Node.js processes:
-   ```bash
-   pm2 start dist/main.js --name textbee-api
-   ```
-3. Configure `Caddy` to serve your web application and API. Example Caddyfile:
-   ```
-   textbee.dev {
-       reverse_proxy /api/* localhost:3000
-       reverse_proxy /* localhost:3001
-   }
-   ```
-4. Ensure your domain points to your VPS and Caddy is configured properly.
-
-### Dockerized env
-#### Requirements:   
-- Docker installed
-1. After setting up Firebase, update your `.env` in `web` && `api` folder.
-   ```bash
-   cd web && cp .env.example .env \
-   && cd ../api && cp .env.example .env
-   ```
-2. Navigate to root folder and execute docker-compose.yml file.    
-   This will spin up `web` container, `api` container alongside with `MongoDB` and `MongoExpress`. `textbee` database will be automatically created.
+2. Start everything: web, api, MongoDB, mongo-express, Redis and the MQTT broker.
    ```bash
    docker compose up -d
    ```
-   To stop the containers simply type
-   ```bash
-   docker compose down
-   ```   
+3. On first run, initialise the broker's dynamic security and the API's role as described in [mqtt/README.md](mqtt/README.md), then set the `MQTT_*` variables and restart the API.
 
-## Contributing
+The broker publishes no ports. Expose its WebSocket listener (`textbee-mqtt:9001`) through your reverse proxy or tunnel at a public `wss://` URL. That URL must allow WebSockets and must not sit behind a login gate, because the broker does its own auth.
 
-Contributions are welcome!
+### API settings for this fork
 
-1. [Fork](https://github.com/textbee/textbee/fork) the project.
-2. Create a feature or bugfix branch from `main` branch.
-3. Make sure your commit messages and PR comment summaries are descriptive.
-4. Create a pull request to the `main` branch.
+| Variable | Purpose |
+| --- | --- |
+| `ALLOWED_EMAILS` | Comma-separated addresses that may sign up or sign in. If empty, no new accounts can be created and existing accounts sign in as before. |
+| `API_PUBLIC_URL`, `APP_PUBLIC_URL` | Public addresses used in links and emails |
+| `APP_LOGO_URL` | Email logo. Defaults to `<APP_PUBLIC_URL>/images/logo.png` |
+| `MQTT_ENABLED` | `true` turns on the MQTT transport. Any other value means FCM only. |
+| `MQTT_URL` | Broker address the API connects to, for example `mqtt://textbee-mqtt:1883` |
+| `MQTT_PUBLIC_URL` | `wss://…/mqtt` address handed to devices |
+| `MQTT_ADMIN_USERNAME`, `MQTT_ADMIN_PASSWORD` | Dynamic-security admin client the API uses |
+| `MQTT_CLIENT_ID` | Fixed client id for the API's persistent session (default `textbee-api`) |
+| `MQTT_PRESENCE_GRACE_SECONDS` | How long a dropped device still counts as online (default 90) |
 
-## Bug Reporting and Feature Requests
+Firebase is still needed for FCM. Set the `FIREBASE_*` variables in `api/.env` and supply `google-services.json` to the Android build.
 
-Please feel free to [create an issue](https://github.com/textbee/textbee/issues/new) in the repository for any bug reports or feature requests. Make sure to provide a detailed description of the issue or feature you are requesting and properly label whether it is a bug or a feature request.
+### Building the Android app
 
-Please note that if you discover any vulnerability or security issue, we kindly request that you refrain from creating a public issue. Instead, send an email detailing the vulnerability to contact@textbee.dev.
+The app's links and identity come from Gradle properties, so you don't edit any source to point it at your instance:
 
-## For support, feedback, and questions
-Feel free to reach out to us at contact@textbee.dev or [Join our Discord server](https://textbee.dev/discord)
+```bash
+cd android
+./gradlew assembleProdRelease \
+  -PtextbeeApiBaseUrl=https://api.example.com/api/v1/ \
+  -PtextbeeWebBaseUrl=https://app.example.com \
+  -PtextbeeReleasesRepo=owner/repo
+```
+
+The other properties are `textbeeApplicationId`, `textbeeVersionCode`, `textbeeVersionName` and the `textbee*Url` links. See [android/BUILD_VARIANTS_SETUP.md](android/BUILD_VARIANTS_SETUP.md). The [fork-release workflow](.github/workflows/fork-release.yaml) passes them in from repository variables.
+
+### Building the web and API
+
+```bash
+cd web && pnpm install && pnpm build
+cd api && pnpm install && pnpm build
+```
+
+### Analytics and telemetry
+
+A self-hosted instance reports nothing to anyone by default. The web app loads no analytics scripts and the API sends no events unless you set the opt-in variables: `NEXT_PUBLIC_ANALYTICS_PROVIDERS` and the provider ids in `web/.env`, and `ANALYTICS_PROVIDERS` in `api/.env`.
+
+### Branding
+
+All icons are generated from `branding/bee.png` by `branding/generate-icons.sh`. The app icon is a squircle; every other icon is circular.
+
+## FAQ
+
+<details>
+<summary><b>Does my phone need to stay on?</b></summary>
+Yes. Messages go out through the phone, so it must be powered on with the app running and online. A spare phone on a charger works well as a dedicated gateway. Allow the app to ignore battery optimisation so the MQTT connection survives.
+
+</details>
+<details>
+<summary><b>Do I need MQTT?</b></summary>
+No. With `MQTT_ENABLED` unset, the instance behaves like upstream textbee and uses FCM only. MQTT makes delivery faster and less dependent on Google's push timing.
+
+</details>
+<details>
+<summary><b>Will my carrier block my number?</b></summary>
+Carriers apply their own rate limits and anti-spam rules. For low-volume use this is rare. For more throughput, spread sends across several devices or SIMs. You are responsible for your carrier's terms and for consent and messaging laws where you and your recipients are.
+
+</details>
+
+## Upstream and license
+
+Built on [textbee](https://github.com/vernu/textbee) by vernu and its contributors, under the same [license](LICENSE). Report textbeeqtt-specific bugs in this repository's [issues](https://github.com/joowdx/textbee/issues). For security issues, see [SECURITY.md](SECURITY.md).
