@@ -63,21 +63,20 @@ export default function DashboardLayout({
             ))}
           </nav>
         </div>
-        {Routes.quickstart ? (
-          <p className='px-4 pb-3 text-xs text-muted-foreground'>
-            Need help?{' '}
-            <a
-              href={Routes.quickstart}
-              target='_blank'
-              rel='noreferrer'
-              className='font-medium text-primary hover:underline'
-            >
-              Quick start
-            </a>
-          </p>
-        ) : null}
-        {/* h-16 matches the footer beside it, so the two top borders line up. */}
-        <div className='flex h-16 flex-col justify-center border-t border-border px-4'>
+        <div className='flex h-16 flex-col justify-center space-y-3 border-t border-border px-4'>
+          {Routes.quickstart ? (
+            <p className='text-xs text-muted-foreground'>
+              Need help?{' '}
+              <a
+                href={Routes.quickstart}
+                target='_blank'
+                rel='noreferrer'
+                className='font-medium text-primary hover:underline'
+              >
+                Quick start
+              </a>
+            </p>
+          ) : null}
           <ThemeToggle />
         </div>
       </aside>
@@ -101,10 +100,7 @@ export default function DashboardLayout({
         {/* Inside the sidebar-offset column so the fixed sidebar cannot paint
             over it, and padded clear of the fixed mobile tab bar. */}
         <div className='pb-20 pt-8 md:pb-0'>
-          <Footer
-            className='md:h-16'
-            inset='px-4 sm:px-6 md:h-full md:px-8 md:py-0'
-          />
+          <Footer inset='px-4 sm:px-6 md:h-[63px] md:px-8 md:py-0' />
         </div>
       </div>
 
