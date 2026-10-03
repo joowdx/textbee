@@ -147,7 +147,7 @@ export class RegisterDeviceInputDTO {
     type: String,
     required: false,
     description:
-      'Firebase Cloud Messaging token. textbee pushes send jobs to this token, so a stale value stops delivery.',
+      'Firebase Cloud Messaging token. textbeeqtt pushes send jobs to this token, so a stale value stops delivery.',
   })
   fcmToken?: string
 
@@ -789,7 +789,7 @@ export class DeviceDTO {
   @ApiProperty({
     type: Boolean,
     description:
-      'Whether incoming messages are forwarded to textbee. Required for received message history and webhooks.',
+      'Whether incoming messages are forwarded to textbeeqtt. Required for received message history and webhooks.',
   })
   receiveSMSEnabled: boolean
 
@@ -1551,7 +1551,7 @@ export class SmsPermissionStatusDTO {
     type: Boolean,
     nullable: true,
     description:
-      'True when your latest outgoing message failed because the textbee app on the phone lacks the SMS permission (error code PERMISSION_DENIED), and the phone has not reported the permission granted since. False when the latest outgoing message did not fail for that reason, or the phone has since reported the permission granted. Null when the account has never sent a message.',
+      'True when your latest outgoing message failed because the textbeeqtt app on the phone lacks the SMS permission (error code PERMISSION_DENIED), and the phone has not reported the permission granted since. False when the latest outgoing message did not fail for that reason, or the phone has since reported the permission granted. Null when the account has never sent a message.',
   })
   needsSmsPermission: boolean | null
 

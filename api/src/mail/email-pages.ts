@@ -22,8 +22,8 @@ const NOTICES =
 
 export const unsubscribeConfirmPage = (token: string) =>
   page(
-    'Unsubscribe from textbee product emails?',
-    '<p>You will stop getting product tips and offers from textbee.</p>' +
+    'Unsubscribe from textbeeqtt product emails?',
+    '<p>You will stop getting product tips and offers from textbeeqtt.</p>' +
       NOTICES +
       form('unsubscribe', token, 'Unsubscribe'),
   )
@@ -31,7 +31,7 @@ export const unsubscribeConfirmPage = (token: string) =>
 export const unsubscribedPage = (token: string) =>
   page(
     'You are unsubscribed',
-    '<p>You will not get product emails from textbee anymore.</p>' +
+    '<p>You will not get product emails from textbeeqtt anymore.</p>' +
       NOTICES +
       '<p>Changed your mind?</p>' +
       form('resubscribe', token, 'Subscribe again'),
@@ -40,7 +40,7 @@ export const unsubscribedPage = (token: string) =>
 export const resubscribedPage = () =>
   page(
     'You are subscribed again',
-    '<p>You will get textbee product emails again. You can unsubscribe with the link at the bottom of any of them.</p>',
+    '<p>You will get textbeeqtt product emails again. You can unsubscribe with the link at the bottom of any of them.</p>',
   )
 
 export const invalidLinkPage = () =>

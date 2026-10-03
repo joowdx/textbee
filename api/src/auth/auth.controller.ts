@@ -93,7 +93,7 @@ export class AuthController {
   @ApiOperation({
     summary: 'Sign in with Google',
     description:
-      'Exchanges a Google ID token for a textbee session. Creates the account on first sign in.',
+      'Exchanges a Google ID token for a textbeeqtt session. Creates the account on first sign in.',
   })
   @ApiResponse({
     status: 200,

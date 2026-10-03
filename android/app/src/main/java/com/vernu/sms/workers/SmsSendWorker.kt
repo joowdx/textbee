@@ -224,7 +224,7 @@ class SmsSendWorker(context: Context, workerParams: WorkerParameters) : Worker(c
             )
         }
         val notification = NotificationCompat.Builder(applicationContext, FOREGROUND_CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.ic_stat_bee)
             .setContentTitle("Sending SMS")
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)

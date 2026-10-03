@@ -21,7 +21,7 @@ export default function CommunitySupportCard() {
       <CardHeader>
         <CardTitle>Get help from the community</CardTitle>
         <CardDescription>
-          Ask questions and get answers from other textbee users and the team on
+          Ask questions and get answers from other textbeeqtt users and the team on
           our Discord server. It is often the fastest way to get unblocked.
         </CardDescription>
       </CardHeader>

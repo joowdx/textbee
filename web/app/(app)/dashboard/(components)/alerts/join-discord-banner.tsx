@@ -36,7 +36,7 @@ export default function JoinDiscordBanner() {
     <Alert className='bg-card text-foreground'>
       <AlertDescription className='flex flex-col items-center gap-2 sm:flex-row md:gap-4'>
         <span className='w-full text-center text-sm font-medium sm:flex-1 sm:text-left md:text-base'>
-          Questions or feedback? Get quick answers from the textbee community on
+          Questions or feedback? Get quick answers from the textbeeqtt community on
           Discord.
         </span>
         <div className='mt-2 flex w-full items-center justify-center gap-2 sm:mt-0 sm:w-auto sm:justify-end'>

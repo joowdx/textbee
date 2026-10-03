@@ -112,7 +112,7 @@
     },
     "/api/v1/gateway/send-sms": {
       "post": {
-        "description": "Sends one message to one or more recipients from a phone on your account. deviceId is optional: without it textbee uses your default device, otherwise the enabled device with the most recent heartbeat. Every recipient counts as one message against your plan.",
+        "description": "Sends one message to one or more recipients from a phone on your account. deviceId is optional: without it textbeeqtt uses your default device, otherwise the enabled device with the most recent heartbeat. Every recipient counts as one message against your plan.",
         "operationId": "GatewayController_sendSMSDeviceless_v1",
         "parameters": [],
         "requestBody": {
@@ -566,7 +566,7 @@
     },
     "/api/v1/webhooks/notifications": {
       "get": {
-        "description": "Delivery history across your subscriptions, newest first. Use it to see what textbee sent, what your endpoint answered, and whether a retry is pending. History is kept for subscriptions you have since deleted.",
+        "description": "Delivery history across your subscriptions, newest first. Use it to see what textbeeqtt sent, what your endpoint answered, and whether a retry is pending. History is kept for subscriptions you have since deleted.",
         "operationId": "WebhookController_getWebhookNotifications_v1",
         "parameters": [
           {
@@ -734,7 +734,7 @@
         ]
       },
       "patch": {
-        "description": "Changes only the fields you send. Use isActive to re-enable a subscription textbee paused after repeated failures.",
+        "description": "Changes only the fields you send. Use isActive to re-enable a subscription textbeeqtt paused after repeated failures.",
         "operationId": "WebhookController_updateWebhook_v1",
         "parameters": [
           {
@@ -833,8 +833,8 @@
     }
   },
   "info": {
-    "title": "textbee API",
-    "description": "Send and receive SMS through an Android phone you own. Authenticate every request with an API key from your textbee dashboard, sent as the x-api-key header.",
+    "title": "textbeeqtt API",
+    "description": "Send and receive SMS through an Android phone you own. Authenticate every request with an API key from your textbeeqtt dashboard, sent as the x-api-key header.",
     "version": "1.0",
     "contact": {},
     "license": {
@@ -849,7 +849,7 @@
     },
     {
       "name": "webhooks",
-      "description": "Subscribe to SMS events and inspect the delivery attempts textbee made for them."
+      "description": "Subscribe to SMS events and inspect the delivery attempts textbeeqtt made for them."
     }
   ],
   "servers": [
@@ -863,7 +863,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "x-api-key",
-        "description": "API key from your textbee dashboard, sent on every request."
+        "description": "API key from your textbeeqtt dashboard, sent on every request."
       }
     },
     "schemas": {
@@ -1267,7 +1267,7 @@
           },
           "receiveSMSEnabled": {
             "type": "boolean",
-            "description": "Whether incoming messages are forwarded to textbee. Required for received message history and webhooks."
+            "description": "Whether incoming messages are forwarded to textbeeqtt. Required for received message history and webhooks."
           },
           "smsSendDelaySeconds": {
             "type": "number",
@@ -2207,7 +2207,7 @@
           },
           "text": {
             "type": "string",
-            "description": "What textbee recorded, for example why the subscription was paused."
+            "description": "What textbeeqtt recorded, for example why the subscription was paused."
           }
         },
         "required": [
@@ -2232,7 +2232,7 @@
           },
           "isActive": {
             "type": "boolean",
-            "description": "Whether deliveries are attempted. textbee pauses subscriptions that keep failing."
+            "description": "Whether deliveries are attempted. textbeeqtt pauses subscriptions that keep failing."
           },
           "events": {
             "type": "array",
@@ -2285,7 +2285,7 @@
             "description": "Last time a delivery failed."
           },
           "notes": {
-            "description": "Notes textbee added, such as an auto-pause reason.",
+            "description": "Notes textbeeqtt added, such as an auto-pause reason.",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/WebhookNoteDTO"
@@ -2356,7 +2356,7 @@
           },
           "payload": {
             "type": "object",
-            "description": "Exact JSON body textbee POSTed to your endpoint."
+            "description": "Exact JSON body textbeeqtt POSTed to your endpoint."
           },
           "computedStatus": {
             "type": "string",
@@ -2366,7 +2366,7 @@
               "delivered",
               "failed"
             ],
-            "description": "Delivery state. Retrying means textbee will try again, failed means it gave up after 10 attempts."
+            "description": "Delivery state. Retrying means textbeeqtt will try again, failed means it gave up after 10 attempts."
           },
           "deliveryUrl": {
             "type": "string",
@@ -2394,7 +2394,7 @@
           "deliveryAttemptAbortedAt": {
             "format": "date-time",
             "type": "string",
-            "description": "When textbee stopped retrying."
+            "description": "When textbeeqtt stopped retrying."
           },
           "errorType": {
             "type": "string",
@@ -2498,12 +2498,12 @@
           },
           "deliveryUrl": {
             "type": "string",
-            "description": "URL textbee POSTs events to. Must be http or https and publicly reachable. Private and loopback hosts are rejected.",
+            "description": "URL textbeeqtt POSTs events to. Must be http or https and publicly reachable. Private and loopback hosts are rejected.",
             "example": "https://example.com/textbee/webhook"
           },
           "signingSecret": {
             "type": "string",
-            "description": "Shared secret, at least 20 characters. textbee signs every delivery with it and sends the signature in the X-Signature header, so your endpoint can verify the request really came from textbee."
+            "description": "Shared secret, at least 20 characters. textbeeqtt signs every delivery with it and sends the signature in the X-Signature header, so your endpoint can verify the request really came from textbeeqtt."
           },
           "events": {
             "type": "array",
@@ -2540,7 +2540,7 @@
           },
           "isActive": {
             "type": "boolean",
-            "description": "Whether deliveries are attempted. Set it to true to re-enable a subscription textbee paused after repeated failures."
+            "description": "Whether deliveries are attempted. Set it to true to re-enable a subscription textbeeqtt paused after repeated failures."
           },
           "deliveryUrl": {
             "type": "string",

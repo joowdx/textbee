@@ -95,19 +95,19 @@ class StickyNotificationService : Service() {
             )
 
             Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
-                .setContentTitle("textbee Active")
+                .setContentTitle("textbeeqtt Active")
                 .setContentText("SMS gateway service is active")
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_stat_bee)
                 .build()
         } else {
             @Suppress("DEPRECATION")
             NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                .setContentTitle("textbee Active")
+                .setContentTitle("textbeeqtt Active")
                 .setContentText("SMS gateway service is active")
                 .setOngoing(true)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_stat_bee)
                 .build()
         }
     }

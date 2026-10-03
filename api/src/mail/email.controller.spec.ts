@@ -38,7 +38,7 @@ describe('EmailController', () => {
 
     expect(res.status).toHaveBeenCalledWith(200)
     const html = res.send.mock.calls[0][0]
-    expect(html).toContain('Unsubscribe from textbee product emails?')
+    expect(html).toContain('Unsubscribe from textbeeqtt product emails?')
     expect(html).toContain('method="post"')
     expect(html).toContain('billing still arrive')
     expect(userModel.updateOne).not.toHaveBeenCalled()

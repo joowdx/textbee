@@ -50,7 +50,7 @@ export default function ContributePage() {
   return (
     <div className='min-h-screen p-4 md:p-8 space-y-8'>
       <div className='text-center space-y-4'>
-        <h1 className='text-4xl font-bold'>Support textbee</h1>
+        <h1 className='text-4xl font-bold'>Support textbeeqtt</h1>
         <p className='text-muted-foreground max-w-2xl mx-auto'>
           Your contribution, whether financial or through code, helps keep this
           project alive and growing.
@@ -65,7 +65,7 @@ export default function ContributePage() {
               Financial Support
             </CardTitle>
             <CardDescription>
-              Help sustain textbee&apos;s development through financial
+              Help sustain textbeeqtt&apos;s development through financial
               contributions
             </CardDescription>
           </CardHeader>
@@ -180,7 +180,7 @@ export default function ContributePage() {
               Code Contributions
             </CardTitle>
             <CardDescription>
-              Help improve textbee by contributing to the codebase
+              Help improve textbeeqtt by contributing to the codebase
             </CardDescription>
           </CardHeader>
           <CardContent>

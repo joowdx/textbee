@@ -72,7 +72,7 @@ android {
             versionNameSuffix "-dev"
             buildConfigField "String", "API_BASE_URL", "\"${prop('textbeeDevApiBaseUrl', apiBaseUrl)}\""
             buildConfigField "String", "ENVIRONMENT", '"development"'
-            resValue "string", "app_name", "textbee (Dev)"
+            resValue "string", "app_name", "textbeeqtt (Dev)"
         }
         
         prod {
@@ -80,7 +80,7 @@ android {
             applicationId prop('textbeeApplicationId', 'com.vernu.sms')
             buildConfigField "String", "API_BASE_URL", "\"${apiBaseUrl}\""
             buildConfigField "String", "ENVIRONMENT", '"production"'
-            resValue "string", "app_name", "textbee"
+            resValue "string", "app_name", "textbeeqtt"
         }
     }
 

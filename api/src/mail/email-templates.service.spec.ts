@@ -24,9 +24,9 @@ describe('EmailTemplatesService', () => {
 
     expect(r.enabled).toBe(true)
     expect(r.version).toBe(0)
-    expect(r.document.subject).toBe('Your textbee password was changed')
+    expect(r.document.subject).toBe('Your textbeeqtt password was changed')
     expect(r.document.text).toContain('Hi Ada,')
-    expect(r.document.html).toContain('textbee')
+    expect(r.document.html).toContain('textbeeqtt')
   })
 
   it('uses override fields that are present and keeps the rest', async () => {
@@ -38,7 +38,7 @@ describe('EmailTemplatesService', () => {
 
     expect(r.version).toBe(4)
     expect(r.document.subject).toBe('Password updated, Ada')
-    expect(r.document.text).toContain('Your textbee password has been changed')
+    expect(r.document.text).toContain('Your textbeeqtt password has been changed')
   })
 
   it('falls back to the default when an override uses an unknown placeholder', async () => {
@@ -147,7 +147,7 @@ describe('EmailTemplatesService', () => {
 
     const bad = build([{ key: 'footer_notice', body: 'Footer {{firstName}}', version: 2 }])
     const r = await bad.service.render('T3', T3_VARS)
-    expect(r.document.text).toContain('© 2026 textbee')
+    expect(r.document.text).toContain('© 2026 textbeeqtt')
     expect(bad.warn).toHaveBeenCalled()
   })
 

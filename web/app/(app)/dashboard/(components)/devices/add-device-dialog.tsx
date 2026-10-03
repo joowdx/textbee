@@ -53,7 +53,7 @@ const AddDeviceDialog = forwardRef<AddDeviceHandle>(function AddDeviceDialog(
           </DialogHeader>
           <ol className='list-decimal space-y-3 pl-5 text-left text-sm text-muted-foreground'>
             <li>
-              Download textbee app from{' '}
+              Download textbeeqtt app from{' '}
               <a
                 href={Routes.downloadAndroidApp}
                 target='_blank'
@@ -70,7 +70,7 @@ const AddDeviceDialog = forwardRef<AddDeviceHandle>(function AddDeviceDialog(
               the app instead
             </li>
             <li>
-              Open the textbee app and scan the QR code or paste the key
+              Open the textbeeqtt app and scan the QR code or paste the key
               manually. Your device should appear in the list when the link
               succeeds.
             </li>

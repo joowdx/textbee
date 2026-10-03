@@ -263,7 +263,7 @@ private fun shareDiagnostics(context: android.content.Context) {
     val deviceId = SharedPreferenceHelper.getSharedPreferenceString(
         context, AppConstants.SHARED_PREFS_DEVICE_ID_KEY, ""
     ) ?: ""
-    val header = "textbee ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
+    val header = "textbeeqtt ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
         "${Build.MANUFACTURER} ${Build.MODEL}, Android ${Build.VERSION.RELEASE}\n" +
         "device $deviceId\n" +
         "exported ${eventTimeFormat.format(java.util.Date())}"
@@ -272,7 +272,7 @@ private fun shareDiagnostics(context: android.content.Context) {
         Intent.createChooser(
             Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
-                putExtra(Intent.EXTRA_SUBJECT, "textbee diagnostics")
+                putExtra(Intent.EXTRA_SUBJECT, "textbeeqtt diagnostics")
                 putExtra(Intent.EXTRA_TEXT, text)
             },
             "Export diagnostics"

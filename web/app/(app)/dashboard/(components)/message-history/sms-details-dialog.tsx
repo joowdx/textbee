@@ -177,7 +177,7 @@ export default function SmsDetailsDialog({
               )}
               {message.errorCode === 'PERMISSION_DENIED' && (
                 <p className='text-xs text-foreground'>
-                  The textbee app on this phone does not have SMS permission.
+                  The textbeeqtt app on this phone does not have SMS permission.
                   {permissionGuide ? (
                     <>
                       {' '}

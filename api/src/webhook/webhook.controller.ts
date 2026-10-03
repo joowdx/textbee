@@ -76,7 +76,7 @@ export class WebhookController {
   @ApiOperation({
     summary: 'List webhook delivery attempts',
     description:
-      'Delivery history across your subscriptions, newest first. Use it to see what textbee sent, what your endpoint answered, and whether a retry is pending. History is kept for subscriptions you have since deleted.',
+      'Delivery history across your subscriptions, newest first. Use it to see what textbeeqtt sent, what your endpoint answered, and whether a retry is pending. History is kept for subscriptions you have since deleted.',
   })
   @ApiQuery({
     name: 'page',
@@ -221,7 +221,7 @@ export class WebhookController {
   @ApiOperation({
     summary: 'Update a webhook subscription',
     description:
-      'Changes only the fields you send. Use isActive to re-enable a subscription textbee paused after repeated failures.',
+      'Changes only the fields you send. Use isActive to re-enable a subscription textbeeqtt paused after repeated failures.',
   })
   @ApiParam(WEBHOOK_ID_PARAM)
   @ApiResponse({

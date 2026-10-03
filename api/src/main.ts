@@ -8,6 +8,7 @@ import { SwaggerModule } from '@nestjs/swagger'
 import * as express from 'express'
 import { NestExpressApplication } from '@nestjs/platform-express'
 import { applyApiConventions, buildSwaggerConfig } from './openapi/swagger-config'
+import { appPublicUrl } from './mail/email-links'
 
 // Ensure crypto is available globally for @nestjs/schedule
 if (typeof globalThis.crypto === 'undefined') {
@@ -34,8 +35,8 @@ async function bootstrap() {
   applyApiConventions(app)
 
   const config = buildSwaggerConfig({
-    title: 'textbee API Docs',
-    description: 'textbee - Android SMS Gateway API Docs',
+    title: 'textbeeqtt API Docs',
+    description: 'textbeeqtt - Android SMS Gateway API Docs',
   })
   const document = SwaggerModule.createDocument(app, config)
   // Every route that carries the spec itself, including swagger-ui-init.js,
@@ -54,6 +55,8 @@ async function bootstrap() {
     next()
   })
   SwaggerModule.setup('', app, document, {
+    customSiteTitle: 'textbeeqtt API Docs',
+    customfavIcon: `${appPublicUrl()}/favicon.ico`,
     swaggerOptions: {
       persistAuthorization: true,
     },

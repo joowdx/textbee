@@ -24,8 +24,8 @@ export default function SmsPermissionAlert() {
           <ShieldAlert className='h-5 w-5 shrink-0 text-destructive mt-0.5' />
           <span>
             <span className='font-medium'>Your phone cannot send SMS.</span>{' '}
-            The textbee app{phone} does not have SMS permission, so your last
-            message failed. Open Settings &gt; Apps &gt; textbee &gt;
+            The textbeeqtt app{phone} does not have SMS permission, so your last
+            message failed. Open Settings &gt; Apps &gt; textbeeqtt &gt;
             Permissions and set SMS to Allow. On Android 15 and 16, tap the menu
             (⋮) and choose Allow restricted settings first.
           </span>

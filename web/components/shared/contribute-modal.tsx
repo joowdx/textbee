@@ -121,7 +121,7 @@ export function ContributeModal() {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className='max-w-md max-h-[90vh] overflow-y-auto flex flex-col'>
           <DialogHeader>
-            <DialogTitle>Support textbee</DialogTitle>
+            <DialogTitle>Support textbeeqtt</DialogTitle>
             <DialogDescription>
               Your contribution helps keep this project alive and growing.
             </DialogDescription>

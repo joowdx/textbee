@@ -81,7 +81,7 @@ export function buildEndpoints(deviceId?: string): Endpoint[] {
   -H "Content-Type: application/json" \\
   -d '{${device.curl}
     "recipients": ["+14155550101"],
-    "message": "Hello from textbee"
+    "message": "Hello from textbeeqtt"
   }'`,
         node: `const res = await fetch(
   '${API_BASE_URL}/gateway/send-sms',
@@ -93,7 +93,7 @@ export function buildEndpoints(deviceId?: string): Endpoint[] {
     },
     body: JSON.stringify({${device.node}
       recipients: ['+14155550101'],
-      message: 'Hello from textbee',
+      message: 'Hello from textbeeqtt',
     }),
   }
 )
@@ -106,7 +106,7 @@ res = requests.post(
     headers={'x-api-key': os.environ['TEXTBEE_API_KEY']},
     json={${device.python}
         'recipients': ['+14155550101'],
-        'message': 'Hello from textbee',
+        'message': 'Hello from textbeeqtt',
     },
 )
 
@@ -123,7 +123,7 @@ curl_setopt_array($ch, [
     ],
     CURLOPT_POSTFIELDS => json_encode([${device.php}
         'recipients' => ['+14155550101'],
-        'message' => 'Hello from textbee',
+        'message' => 'Hello from textbeeqtt',
     ]),
 ]);
 
@@ -139,7 +139,7 @@ import (
 )
 
 func main() {
-	body := []byte(\`{${device.go}"recipients":["+14155550101"],"message":"Hello from textbee"}\`)
+	body := []byte(\`{${device.go}"recipients":["+14155550101"],"message":"Hello from textbeeqtt"}\`)
 
 	req, _ := http.NewRequest("POST",
 		"${API_BASE_URL}/gateway/send-sms",
@@ -160,7 +160,7 @@ func main() {
 
 const result = await textbee.sendSms({${device.sdk}
   recipients: ['+14155550101'],
-  message: 'Hello from textbee',
+  message: 'Hello from textbeeqtt',
 })
 
 console.log(result)`,
@@ -466,7 +466,7 @@ await textbee.getMessages({ smsBatchId, status: 'failed' })`,
     {
       "_id": "665f1c2a9b1e4a0012ab34cd",
       "recipient": "+14155550101",
-      "message": "Hello from textbee",
+      "message": "Hello from textbeeqtt",
       "direction": "sent",
       "status": "delivered",
       "requestedAt": "2026-07-18T09:12:00.000Z",

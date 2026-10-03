@@ -158,7 +158,7 @@ fun SetupCompleteScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "SMS you receive on this phone will appear in your textbee dashboard and be accessible via API",
+                        text = "SMS you receive on this phone will appear in your textbeeqtt dashboard and be accessible via API",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -216,7 +216,7 @@ fun SetupCompleteScreen(
                 onClick = { Links.open(context, Links.docs) }
             ) {
                 Text(
-                    text = "New to textbee? Read the quickstart guide",
+                    text = "New to textbeeqtt? Read the quickstart guide",
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -228,7 +228,7 @@ fun SetupCompleteScreen(
             }
         ) {
             Text(
-                text = "textbee is open source. Star it on GitHub.",
+                text = "textbeeqtt is open source. Star it on GitHub.",
                 style = MaterialTheme.typography.bodySmall
             )
         }

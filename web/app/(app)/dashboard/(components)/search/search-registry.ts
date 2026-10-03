@@ -128,7 +128,7 @@ const allSearchEntries: SearchEntry[] = [
     label: 'API guide',
     group: 'Messaging',
     icon: Code2,
-    description: 'Integrate textbee into your app',
+    description: 'Integrate textbeeqtt into your app',
     keywords: [
       'api',
       'docs',

@@ -27,7 +27,7 @@ describe('SmsPermissionAlert', () => {
     render(<SmsPermissionAlert />, { wrapper: TestProviders })
 
     expect(await screen.findByText('Your phone cannot send SMS.')).toBeTruthy()
-    expect(screen.getByText(/The textbee app on Pixel 8 does not have SMS permission/)).toBeTruthy()
+    expect(screen.getByText(/The textbeeqtt app on Pixel 8 does not have SMS permission/)).toBeTruthy()
     expect(screen.queryByRole('link', { name: /show me how/i })).toBeNull()
     expect(
       screen.getByRole('link', { name: /view messages/i }).getAttribute('href')

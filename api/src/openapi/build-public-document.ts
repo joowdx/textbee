@@ -10,9 +10,9 @@ import {
 import { PUBLIC_OPERATION_KEYS, toOperationKey } from './public-operations'
 import { apiPublicUrl } from '../mail/email-links'
 
-const PUBLIC_TITLE = 'textbee API'
+const PUBLIC_TITLE = 'textbeeqtt API'
 const PUBLIC_DESCRIPTION =
-  'Send and receive SMS through an Android phone you own. Authenticate every request with an API key from your textbee dashboard, sent as the x-api-key header.'
+  'Send and receive SMS through an Android phone you own. Authenticate every request with an API key from your textbeeqtt dashboard, sent as the x-api-key header.'
 const PUBLIC_SERVER_URL = apiPublicUrl()
 const PUBLIC_TAG_NAMES = ['gateway', 'webhooks']
 

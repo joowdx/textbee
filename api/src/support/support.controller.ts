@@ -32,7 +32,7 @@ export class SupportController {
   @ApiOperation({
     summary: 'Contact support',
     description:
-      'Sends a message to the textbee support team and emails you a confirmation. The account behind the credentials is attached automatically.',
+      'Sends a message to the textbeeqtt support team and emails you a confirmation. The account behind the credentials is attached automatically.',
   })
   @ApiResponse({
     status: 201,

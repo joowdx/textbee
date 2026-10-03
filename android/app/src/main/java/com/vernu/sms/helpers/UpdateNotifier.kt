@@ -50,8 +50,8 @@ object UpdateNotifier {
         )
         val versionName = release.versionName
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("textbee $versionName is available")
+            .setSmallIcon(R.drawable.ic_stat_bee)
+            .setContentTitle("textbeeqtt $versionName is available")
             .setContentText("This update improves message sending in the background. Tap to download.")
             .setContentIntent(open)
             .setAutoCancel(true)

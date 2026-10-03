@@ -35,7 +35,7 @@ export default function InlineRegisterPanel() {
       <div className='flex flex-col gap-4 sm:flex-row'>
         <ol className='flex-1 list-decimal space-y-2 pl-5 text-sm text-muted-foreground'>
           <li>
-            Install the textbee app on your Android phone from{' '}
+            Install the textbeeqtt app on your Android phone from{' '}
             <a
               href={Routes.downloadAndroidApp}
               target='_blank'

@@ -60,7 +60,7 @@ fun PermissionsScreen(
             PermissionItem(
                 permission = "android.permission.POST_NOTIFICATIONS",
                 label = "Notifications",
-                rationale = "Lets textbee show that it is running and sending in the background",
+                rationale = "Lets textbeeqtt show that it is running and sending in the background",
                 icon = Icons.Default.Notifications
             )
         ) else emptyList()
@@ -158,7 +158,7 @@ fun PermissionsScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "These permissions are only used to send and receive SMS on your behalf. textbee never accesses your existing message history.",
+                text = "These permissions are only used to send and receive SMS on your behalf. textbeeqtt never accesses your existing message history.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center

@@ -241,7 +241,7 @@ jobs:
                   keystore="$RUNNER_TEMP/release.jks"
                   printf '%s' "$KEYSTORE_BASE64" | base64 -d > "$keystore"
                   apksigner="$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)"
-                  apk="$RUNNER_TEMP/textbee-$VERSION.apk"
+                  apk="$RUNNER_TEMP/textbeeqtt-$VERSION.apk"
 
                   "$apksigner" sign \
                       --ks "$keystore" --ks-key-alias "$KEY_ALIAS" \
@@ -257,7 +257,7 @@ jobs:
                   UPSTREAM_TAG: ${{ needs.plan.outputs.upstream_tag }}
               run: |
                   image="ghcr.io/${GITHUB_REPOSITORY,,}"
-                  gh release create "$VERSION" "$RUNNER_TEMP/textbee-$VERSION.apk" \
+                  gh release create "$VERSION" "$RUNNER_TEMP/textbeeqtt-$VERSION.apk" \
                       -R "$GITHUB_REPOSITORY" \
                       --target "$GITHUB_SHA" \
                       --title "$VERSION" \

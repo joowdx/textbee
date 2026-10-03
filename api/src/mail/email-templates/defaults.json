@@ -16,7 +16,7 @@
     {
       "key": "footer_notice",
       "name": "Notice footer (account and usage, branded)",
-      "body": "This is a notice about your textbee account. If something in it looks wrong, you can reply to this email.\n\n© {{year}} textbee",
+      "body": "This is a notice about your textbeeqtt account. If something in it looks wrong, you can reply to this email.\n\n© {{year}} textbeeqtt",
       "required": [
         "{{year}}"
       ],
@@ -33,9 +33,9 @@
       "footer": "notice",
       "shell": true,
       "listUnsubscribeHeader": false,
-      "subject": "Confirm your email for textbee",
+      "subject": "Confirm your email for textbeeqtt",
       "preheader": "The link works for {{linkTtl}}.",
-      "body": "# Confirm your email address\n\nHi,\n\nOne click confirms this address and unlocks sending.\n\n**[Confirm my email]({{verificationUrl}})**\n\nThe link works for {{linkTtl}}. If it has expired, sign in. Your dashboard has a \"Resend email\" button.\n\nIf you did not create a textbee account, you can ignore this email.",
+      "body": "# Confirm your email address\n\nHi,\n\nOne click confirms this address and unlocks sending.\n\n**[Confirm my email]({{verificationUrl}})**\n\nThe link works for {{linkTtl}}. If it has expired, sign in. Your dashboard has a \"Resend email\" button.\n\nIf you did not create a textbeeqtt account, you can ignore this email.",
       "variables": {
         "linkTtl": "20 minutes",
         "verificationUrl": "https://textbee.example.com/verify-email?userId=…&verificationCode=…"
@@ -55,9 +55,9 @@
       "footer": "notice",
       "shell": true,
       "listUnsubscribeHeader": false,
-      "subject": "Your textbee email is not confirmed yet",
+      "subject": "Your textbeeqtt email is not confirmed yet",
       "preheader": "Sending is locked until you confirm. Here is a new link.",
-      "body": "# Confirm your email to start sending\n\nHi,\n\nYour textbee account is ready, but sending and receiving stay locked until you confirm this address. The earlier link has expired, so here is a new one:\n\n**[Confirm my email]({{verificationUrl}})**\n\nThis link works for {{linkTtl}}.\n\nIf you signed up by mistake, you do not need to do anything. The account stays inactive.",
+      "body": "# Confirm your email to start sending\n\nHi,\n\nYour textbeeqtt account is ready, but sending and receiving stay locked until you confirm this address. The earlier link has expired, so here is a new one:\n\n**[Confirm my email]({{verificationUrl}})**\n\nThis link works for {{linkTtl}}.\n\nIf you signed up by mistake, you do not need to do anything. The account stays inactive.",
       "variables": {
         "linkTtl": "24 hours",
         "verificationUrl": "https://textbee.example.com/verify-email?userId=…&verificationCode=…"
@@ -77,9 +77,9 @@
       "footer": "notice",
       "shell": true,
       "listUnsubscribeHeader": false,
-      "subject": "Reset your textbee password",
+      "subject": "Reset your textbeeqtt password",
       "preheader": "Button or code. Both work for {{linkTtl}}.",
-      "body": "# Reset your password\n\nHi {{firstName}},\n\nWe received a request to reset the password on your textbee account. You can choose a new one here.\n\n**[Set a new password]({{resetUrl}})**\n\nOr enter this code: **{{otp}}**\n\nThe button and the code work for {{linkTtl}}.\n\nIf you did not ask for this, you can ignore this email. Your password stays as it is.",
+      "body": "# Reset your password\n\nHi {{firstName}},\n\nWe received a request to reset the password on your textbeeqtt account. You can choose a new one here.\n\n**[Set a new password]({{resetUrl}})**\n\nOr enter this code: **{{otp}}**\n\nThe button and the code work for {{linkTtl}}.\n\nIf you did not ask for this, you can ignore this email. Your password stays as it is.",
       "variables": {
         "firstName": "Sam",
         "linkTtl": "20 minutes",
@@ -101,9 +101,9 @@
       "footer": "notice",
       "shell": true,
       "listUnsubscribeHeader": false,
-      "subject": "Your textbee password was changed",
+      "subject": "Your textbeeqtt password was changed",
       "preheader": "Not you? A reply to this email reaches our support team.",
-      "body": "# Your password was changed\n\nHi {{firstName}},\n\nYour textbee password has been changed. You can sign in with the new password now.\n\n**Not you?** If you did not make this change, reply to this email right away. We will secure your account.",
+      "body": "# Your password was changed\n\nHi {{firstName}},\n\nYour textbeeqtt password has been changed. You can sign in with the new password now.\n\n**Not you?** If you did not make this change, reply to this email right away. We will secure your account.",
       "variables": {
         "firstName": "Sam"
       },
@@ -123,8 +123,8 @@
       "shell": true,
       "listUnsubscribeHeader": false,
       "subject": "Only {{left}} left in your 30-day allowance",
-      "preheader": "When it runs out, textbee rejects your messages. Upgrade before it stops.",
-      "body": "# Your 30-day allowance is almost used\n\nHi {{firstName}},\n\nYour account used {{used}} of its {{limit}} messages in the last 30 days. When the last {{left}} are used, textbee rejects every message your app sends, and room comes back only as older messages pass 30 days.\n\n{{usageBar}}\n\nUpgrade now so sending does not stop. Pro gives you {{proMonthlyLimit}} messages per rolling 30 days, no daily limit, and up to {{proDeviceLimit}} phones.\n\n**[Upgrade to Pro]({{upgradeUrl}})**\n\n{{proPrice}} a month, or {{proYearlyPrice}} a year ({{proYearlyMonthly}} a month). Cancel any time from the billing page.",
+      "preheader": "When it runs out, textbeeqtt rejects your messages. Upgrade before it stops.",
+      "body": "# Your 30-day allowance is almost used\n\nHi {{firstName}},\n\nYour account used {{used}} of its {{limit}} messages in the last 30 days. When the last {{left}} are used, textbeeqtt rejects every message your app sends, and room comes back only as older messages pass 30 days.\n\n{{usageBar}}\n\nUpgrade now so sending does not stop. Pro gives you {{proMonthlyLimit}} messages per rolling 30 days, no daily limit, and up to {{proDeviceLimit}} phones.\n\n**[Upgrade to Pro]({{upgradeUrl}})**\n\n{{proPrice}} a month, or {{proYearlyPrice}} a year ({{proYearlyMonthly}} a month). Cancel any time from the billing page.",
       "variables": {
         "firstName": "Sam",
         "proMonthlyLimit": "5,000",
@@ -154,8 +154,8 @@
       "shell": true,
       "listUnsubscribeHeader": false,
       "subject": "Only {{left}} left in your 30-day allowance",
-      "preheader": "When it runs out, textbee rejects your messages. Move up before it stops.",
-      "body": "# Your 30-day allowance is almost used\n\nHi {{firstName}},\n\nYour {{planName}} plan used {{used}} of its {{limit}} messages in the last 30 days. When the last {{left}} and the extra {{headroomPercent}} we allow on paid plans are used, textbee rejects every message your app sends.\n\n{{usageBar}}\n\nMove to a bigger plan now so sending does not stop.\n\n**[See bigger plans]({{billingUrl}})**\n\nIf you need more than our largest plan, reply to this email. We will set up a custom plan for your volume.",
+      "preheader": "When it runs out, textbeeqtt rejects your messages. Move up before it stops.",
+      "body": "# Your 30-day allowance is almost used\n\nHi {{firstName}},\n\nYour {{planName}} plan used {{used}} of its {{limit}} messages in the last 30 days. When the last {{left}} and the extra {{headroomPercent}} we allow on paid plans are used, textbeeqtt rejects every message your app sends.\n\n{{usageBar}}\n\nMove to a bigger plan now so sending does not stop.\n\n**[See bigger plans]({{billingUrl}})**\n\nIf you need more than our largest plan, reply to this email. We will set up a custom plan for your volume.",
       "variables": {
         "firstName": "Sam",
         "billingUrl": "https://textbee.example.com/dashboard/account/billing",
@@ -183,7 +183,7 @@
       "listUnsubscribeHeader": false,
       "subject": "Sending stopped: {{limit}}-message limit reached",
       "preheader": "Messages sent now are rejected. Upgrade to Pro to resume right away.",
-      "body": "# Sending has stopped on your account\n\nHi {{firstName}},\n\nYour account used all {{limit}} messages in its rolling 30-day allowance. textbee now rejects every message your app sends.\n\n{{usageBar}}\n\nPro raises your allowance from {{limit}} to {{proMonthlyLimit}} messages per rolling 30 days, removes the daily limit, and covers up to {{proDeviceLimit}} phones. Sending resumes as soon as the payment is complete.\n\n**[Upgrade to Pro and resume sending]({{upgradeUrl}})**\n\n{{proPrice}} a month, or {{proYearlyPrice}} a year ({{proYearlyMonthly}} a month). Cancel any time from the billing page.\n\nWithout an upgrade, room comes back slowly as older messages pass 30 days. The next message slot opens on {{resetDate}}.",
+      "body": "# Sending has stopped on your account\n\nHi {{firstName}},\n\nYour account used all {{limit}} messages in its rolling 30-day allowance. textbeeqtt now rejects every message your app sends.\n\n{{usageBar}}\n\nPro raises your allowance from {{limit}} to {{proMonthlyLimit}} messages per rolling 30 days, removes the daily limit, and covers up to {{proDeviceLimit}} phones. Sending resumes as soon as the payment is complete.\n\n**[Upgrade to Pro and resume sending]({{upgradeUrl}})**\n\n{{proPrice}} a month, or {{proYearlyPrice}} a year ({{proYearlyMonthly}} a month). Cancel any time from the billing page.\n\nWithout an upgrade, room comes back slowly as older messages pass 30 days. The next message slot opens on {{resetDate}}.",
       "variables": {
         "firstName": "Sam",
         "proMonthlyLimit": "5,000",
@@ -214,7 +214,7 @@
       "listUnsubscribeHeader": false,
       "subject": "Sending stopped: {{limit}}-message limit reached",
       "preheader": "Messages sent now are rejected. Move to Scale to resume right away.",
-      "body": "# Sending has stopped on your account\n\nHi {{firstName}},\n\nYour {{planName}} plan used its {{limit}} messages for the last 30 days, plus the extra {{headroomPercent}} we allow on paid plans. textbee now rejects every message your app sends.\n\n{{usageBar}}\n\nScale gives you {{scaleMonthlyLimit}} messages per rolling 30 days and up to {{scaleDeviceLimit}} phones. Sending resumes as soon as the payment is complete.\n\n**[Move to Scale and resume sending]({{scaleUpgradeUrl}})**\n\n{{scalePrice}} a month, or {{scaleYearlyPrice}} a year ({{scaleYearlyMonthly}} a month). If you need more than Scale, reply to this email and we will set up a custom plan.\n\nWithout an upgrade, room comes back slowly as older messages pass 30 days. The next message slot opens on {{resetDate}}.",
+      "body": "# Sending has stopped on your account\n\nHi {{firstName}},\n\nYour {{planName}} plan used its {{limit}} messages for the last 30 days, plus the extra {{headroomPercent}} we allow on paid plans. textbeeqtt now rejects every message your app sends.\n\n{{usageBar}}\n\nScale gives you {{scaleMonthlyLimit}} messages per rolling 30 days and up to {{scaleDeviceLimit}} phones. Sending resumes as soon as the payment is complete.\n\n**[Move to Scale and resume sending]({{scaleUpgradeUrl}})**\n\n{{scalePrice}} a month, or {{scaleYearlyPrice}} a year ({{scaleYearlyMonthly}} a month). If you need more than Scale, reply to this email and we will set up a custom plan.\n\nWithout an upgrade, room comes back slowly as older messages pass 30 days. The next message slot opens on {{resetDate}}.",
       "variables": {
         "firstName": "Sam",
         "scaleMonthlyLimit": "25,000",
@@ -247,7 +247,7 @@
       "listUnsubscribeHeader": false,
       "subject": "Sending stopped: {{limit}}-message limit reached",
       "preheader": "Reply to this email and we will set up a bigger plan today.",
-      "body": "# Sending has stopped on your account\n\nHi {{firstName}},\n\nYour {{planName}} plan used its {{limit}} messages for the last 30 days, plus the extra {{headroomPercent}} we allow on paid plans. textbee now rejects every message your app sends.\n\nReply to this email and we will set up a bigger plan for your volume, so sending can resume.\n\n{{usageBar}}\n\nWithout a bigger plan, room comes back slowly as older messages pass 30 days. The next message slot opens on {{resetDate}}.",
+      "body": "# Sending has stopped on your account\n\nHi {{firstName}},\n\nYour {{planName}} plan used its {{limit}} messages for the last 30 days, plus the extra {{headroomPercent}} we allow on paid plans. textbeeqtt now rejects every message your app sends.\n\nReply to this email and we will set up a bigger plan for your volume, so sending can resume.\n\n{{usageBar}}\n\nWithout a bigger plan, room comes back slowly as older messages pass 30 days. The next message slot opens on {{resetDate}}.",
       "variables": {
         "firstName": "Sam",
         "planName": "Scale",
@@ -273,8 +273,8 @@
       "shell": true,
       "listUnsubscribeHeader": false,
       "subject": "Only {{left}} left of today's {{limit}} messages",
-      "preheader": "After that, textbee rejects your messages until midnight UTC.",
-      "body": "# You are about to hit today's limit\n\nHi {{firstName}},\n\nYour account used {{used}} of its {{limit}} messages today. After {{left}} more, textbee stops sending until midnight UTC, and every message your app sends in the meantime is rejected.\n\n{{usageBar}}\n\nPro has no daily limit. Upgrade now and sending never stops at {{limit}} again.\n\n**[Upgrade to Pro]({{upgradeUrl}})**\n\nPro: {{proMonthlyLimit}} messages per rolling 30 days, no daily limit, up to {{proDeviceLimit}} phones. {{proPrice}} a month, or {{proYearlyPrice}} a year ({{proYearlyMonthly}} a month).",
+      "preheader": "After that, textbeeqtt rejects your messages until midnight UTC.",
+      "body": "# You are about to hit today's limit\n\nHi {{firstName}},\n\nYour account used {{used}} of its {{limit}} messages today. After {{left}} more, textbeeqtt stops sending until midnight UTC, and every message your app sends in the meantime is rejected.\n\n{{usageBar}}\n\nPro has no daily limit. Upgrade now and sending never stops at {{limit}} again.\n\n**[Upgrade to Pro]({{upgradeUrl}})**\n\nPro: {{proMonthlyLimit}} messages per rolling 30 days, no daily limit, up to {{proDeviceLimit}} phones. {{proPrice}} a month, or {{proYearlyPrice}} a year ({{proYearlyMonthly}} a month).",
       "variables": {
         "firstName": "Sam",
         "proMonthlyLimit": "5,000",
@@ -305,7 +305,7 @@
       "listUnsubscribeHeader": false,
       "subject": "Sending stopped: daily limit reached",
       "preheader": "Messages sent now are rejected until midnight UTC. Pro has no daily limit.",
-      "body": "# Sending has stopped for today\n\nHi {{firstName}},\n\nYour account used all {{limit}} of today's messages. textbee now rejects every message your app sends, until midnight UTC{{#localMidnight}} ({{localMidnight}} where you are){{/localMidnight}}.\n\n{{usageBar}}\n\nUpgrade to Pro and sending starts again as soon as the payment is complete, with no daily limit.\n\n**[Upgrade to Pro and resume sending]({{upgradeUrl}})**\n\nWhat Pro gives you:\n\n- no daily limit\n- {{proMonthlyLimit}} messages per rolling 30 days\n- up to {{proDeviceLimit}} phones\n\n{{proPrice}} a month, or {{proYearlyPrice}} a year ({{proYearlyMonthly}} a month). Cancel any time from the billing page.\n\nSent and received messages both count toward the limit.",
+      "body": "# Sending has stopped for today\n\nHi {{firstName}},\n\nYour account used all {{limit}} of today's messages. textbeeqtt now rejects every message your app sends, until midnight UTC{{#localMidnight}} ({{localMidnight}} where you are){{/localMidnight}}.\n\n{{usageBar}}\n\nUpgrade to Pro and sending starts again as soon as the payment is complete, with no daily limit.\n\n**[Upgrade to Pro and resume sending]({{upgradeUrl}})**\n\nWhat Pro gives you:\n\n- no daily limit\n- {{proMonthlyLimit}} messages per rolling 30 days\n- up to {{proDeviceLimit}} phones\n\n{{proPrice}} a month, or {{proYearlyPrice}} a year ({{proYearlyMonthly}} a month). Cancel any time from the billing page.\n\nSent and received messages both count toward the limit.",
       "variables": {
         "firstName": "Sam",
         "proMonthlyLimit": "5,000",
