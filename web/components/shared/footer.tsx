@@ -26,12 +26,14 @@ const linkClass =
 // for standalone pages; the dashboard passes its content padding so the footer
 // lines up with the cards above it.
 export default function Footer({
+  className,
   inset = 'mx-auto max-w-7xl px-4 sm:px-6 lg:px-8',
 }: {
+  className?: string
   inset?: string
 }) {
   return (
-    <footer className='border-t border-border bg-shell/60'>
+    <footer className={cn('border-t border-border bg-shell/60', className)}>
       {/* Left-aligned on mobile: centred links in a single column read as a
           ragged stack with no common edge to scan down. */}
       <div
