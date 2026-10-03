@@ -20,6 +20,24 @@ compose $B/icon-master.png
 compose "$T/fav-master.png" --width 0.85
 "$PY" $B/masks.py "$T/fav-master.png" "$T/fav"
 
+# service icons: the bee on a honeycomb cell filled with the icon background,
+# with nothing touching the bee. the api icon adds code chevrons, < bee >
+compose "$T/bee.png" --mode fg --width 0.5 --size 1024
+compose "$T/hexbg.png" --mode bg --size 1024
+hex=$("$PY" -c "import math;print(' '.join(f'{512+430*math.cos(math.radians(a)):.0f},{512+430*math.sin(math.radians(a)):.0f}' for a in range(-90,270,60)))")
+cell() { # OUT BEE_SCALE BEE_OFFSET [extra -draw args...]
+  local out=$1 scale=$2 off=$3; shift 3
+  magick "$T/hexbg.png" \( -size 1024x1024 xc:black -fill white -draw "polygon $hex" \) \
+    -alpha off -compose copy-opacity -composite -compose over -fill none \
+    -stroke white -strokewidth 110 -draw "stroke-linejoin round polygon $hex" \
+    -stroke '#4a2a14' -strokewidth 66 -draw "stroke-linejoin round polygon $hex" \
+    "$@" \( "$T/bee.png" -resize $scale \) -gravity center -geometry $off -composite \
+    -trim +repage -background none -extent 1024x1024 "$out"
+}
+chev='stroke-linecap round stroke-linejoin round polyline 290,420 220,512 290,604 polyline 734,420 804,512 734,604'
+cell $B/icon-web.png 100% -8+8
+cell $B/icon-api.png 72% -6+6 -stroke white -strokewidth 64 -draw "$chev" -stroke '#4a2a14' -strokewidth 36 -draw "$chev"
+
 # web: circular everywhere, Apple applies its own mask
 W=web
 magick "$T/fav-circle.png" -define icon:auto-resize=48,32,16 $W/public/favicon.ico
