@@ -110,13 +110,11 @@ export default function AppHeader({
             alt='textbeeqtt Logo'
             width={24}
             height={24}
-            className='h-6 w-6 rounded-full bg-white'
+            className='h-6 w-6 rounded-full'
           />
           <span className='font-semibold tracking-tight'>
             text<span className='text-primary'>bee</span>
-            <span className='align-center text-xs text-muted-foreground'>
-              .dev
-            </span>
+            <span className='text-muted-foreground'>qtt</span>
           </span>
         </Link>
 

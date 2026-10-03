@@ -33,7 +33,7 @@ export default function Footer() {
             alt='textbeeqtt logo'
             width={20}
             height={20}
-            className='h-5 w-5 rounded-full bg-white'
+            className='h-5 w-5 rounded-full'
           />
           <span className='text-sm text-muted-foreground'>
             © {new Date().getFullYear()} textbeeqtt
