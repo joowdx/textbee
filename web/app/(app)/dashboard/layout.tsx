@@ -100,7 +100,7 @@ export default function DashboardLayout({
         {/* Inside the sidebar-offset column so the fixed sidebar cannot paint
             over it, and padded clear of the fixed mobile tab bar. */}
         <div className='pb-20 pt-8 md:pb-0'>
-          <Footer />
+          <Footer inset='px-4 sm:px-6 md:px-8' />
         </div>
       </div>
 

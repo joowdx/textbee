@@ -3,6 +3,7 @@ import { ExternalLinks } from '@/config/external-links'
 import { Activity } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { cn } from '@/lib/utils'
 
 // A logged-in user is already converted, so the app footer stays a single slim
 // bar rather than the marketing site's multi-column link farm. It borrows that
@@ -21,12 +22,24 @@ const links = [
 const linkClass =
   'text-sm text-muted-foreground transition-colors hover:text-foreground'
 
-export default function Footer() {
+// `inset` sets the inner row's width and side padding. The default centres it
+// for standalone pages; the dashboard passes its content padding so the footer
+// lines up with the cards above it.
+export default function Footer({
+  inset = 'mx-auto max-w-7xl px-4 sm:px-6 lg:px-8',
+}: {
+  inset?: string
+}) {
   return (
     <footer className='border-t border-border bg-shell/60'>
       {/* Left-aligned on mobile: centred links in a single column read as a
           ragged stack with no common edge to scan down. */}
-      <div className='mx-auto flex max-w-7xl flex-col items-start gap-4 px-4 py-6 sm:items-center sm:px-6 md:flex-row md:justify-between lg:px-8'>
+      <div
+        className={cn(
+          'flex flex-col items-start gap-4 py-6 sm:items-center md:flex-row md:justify-between',
+          inset
+        )}
+      >
         <div className='flex items-center gap-2'>
           <Image
             src='/images/logo.png'
